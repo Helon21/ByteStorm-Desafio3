@@ -2,6 +2,7 @@ package bytestorm.msfuncionarios.service;
 
 import bytestorm.msfuncionarios.entity.Funcionario;
 import bytestorm.msfuncionarios.exceptions.CpfRepetidoException;
+import bytestorm.msfuncionarios.exceptions.FuncionarioNaoEncontradoException;
 import bytestorm.msfuncionarios.repository.FuncionarioRepository;
 import bytestorm.msfuncionarios.web.dto.FuncionarioCriarDto;
 import bytestorm.msfuncionarios.web.dto.mapper.FuncionarioMapper;
@@ -30,4 +31,10 @@ public class FuncionarioService {
         return funcionarioRepository.save(funcionario);
     }
 
+    @Transactional(readOnly = true)
+    public Funcionario buscarFuncionarioPorId(Long id) {
+        return funcionarioRepository.findById(id).orElseThrow(
+                () -> new FuncionarioNaoEncontradoException("Funcionário com o id '" + id + "' não encontrado")
+        );
+    }
 }

@@ -37,4 +37,11 @@ public class FuncionarioService {
                 () -> new FuncionarioNaoEncontradoException("Funcionário com o id '" + id + "' não encontrado")
         );
     }
+
+    @Transactional(readOnly = true)
+    public Funcionario buscarFuncionarioPorCpf(String cpf) {
+        return funcionarioRepository.findByCpf(cpf).orElseThrow(
+                () -> new FuncionarioNaoEncontradoException("Funcionário com o cpf '" + cpf + "' não encontrado")
+        );
+    }
 }

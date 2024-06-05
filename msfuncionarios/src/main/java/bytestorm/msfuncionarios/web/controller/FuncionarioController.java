@@ -40,9 +40,15 @@ public class FuncionarioController {
         return ResponseEntity.status(201).body(FuncionarioMapper.paraDto(funcionario));
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/id/{id}")
     public ResponseEntity<FuncionarioRespostaDto> buscarPorId(@PathVariable Long id) {
         Funcionario funcionario = funcionarioService.buscarFuncionarioPorId(id);
+        return ResponseEntity.ok(FuncionarioMapper.paraDto(funcionario));
+    }
+
+    @GetMapping("/cpf/{cpf}")
+    public ResponseEntity<FuncionarioRespostaDto> buscarPorCpf(@PathVariable String cpf) {
+        Funcionario funcionario = funcionarioService.buscarFuncionarioPorCpf(cpf);
         return ResponseEntity.ok(FuncionarioMapper.paraDto(funcionario));
     }
 

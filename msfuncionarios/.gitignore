@@ -4,6 +4,7 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 funcionarios-db.mv.db
+funcionarios-db.trace.db
 
 ### STS ###
 .apt_generated

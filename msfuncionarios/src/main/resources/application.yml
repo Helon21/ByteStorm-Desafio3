@@ -19,12 +19,13 @@ spring:
     console:
       enabled: true
       path: /h2-console
-#  doc:
-#    swagger-ui:
-#      path: /docs-alunos.html
-#    api-docs:
-#      path: /docs-alunos
-#    packagesToScan: com.bytestorm.alunos.web.controller
+
+springdoc:
+  swagger-ui:
+    path: /docs-funcionarios.html
+  api-docs:
+    path: /docs-funcionarios
+  packagesToScan: bytestorm.msfuncionarios.web.controller
 
 server:
   port: 8081

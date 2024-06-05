@@ -3,6 +3,7 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+funcionarios-db.mv.db
 
 ### STS ###
 .apt_generated

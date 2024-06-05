@@ -13,7 +13,7 @@ spring:
       ddl-auto: update
     database-platform: org.hibernate.dialect.H2Dialect
   datasource:
-    url: jdbc:h2:file:./alunos-db
+    url: jdbc:h2:file:./funcionarios-db
     driverClassName: org.h2.Driver
   h2:
     console:

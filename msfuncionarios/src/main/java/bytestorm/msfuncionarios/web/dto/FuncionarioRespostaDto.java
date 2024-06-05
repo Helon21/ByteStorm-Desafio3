@@ -18,8 +18,8 @@ public class FuncionarioRespostaDto {
     private Long id;
     private String nome;
     private String cpf;
-    private LocalDate dataNascimento;
     @JsonFormat(pattern = "dd-MM-yyyy")
+    private LocalDate dataNascimento;
     private Funcionario.Status status;
     private Funcionario.Sexo sexo;
 

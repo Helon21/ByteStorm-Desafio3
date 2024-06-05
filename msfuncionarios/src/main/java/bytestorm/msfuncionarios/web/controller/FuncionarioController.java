@@ -1,18 +1,25 @@
 package bytestorm.msfuncionarios.web.controller;
 
 import bytestorm.msfuncionarios.entity.Funcionario;
+import bytestorm.msfuncionarios.repository.projection.FuncionarioProjection;
 import bytestorm.msfuncionarios.service.FuncionarioService;
 import bytestorm.msfuncionarios.web.dto.FuncionarioRespostaDto;
 import bytestorm.msfuncionarios.web.dto.FuncionarioCriarDto;
+import bytestorm.msfuncionarios.web.dto.PageableDto;
 import bytestorm.msfuncionarios.web.dto.mapper.FuncionarioMapper;
+import bytestorm.msfuncionarios.web.dto.mapper.PageableMapper;
 import bytestorm.msfuncionarios.web.exception.MensagemErro;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -52,4 +59,9 @@ public class FuncionarioController {
         return ResponseEntity.ok(FuncionarioMapper.paraDto(funcionario));
     }
 
+    @GetMapping
+    public ResponseEntity<PageableDto> getAll(@Parameter(hidden = true) @PageableDefault(size=5, sort={"nome"}, page=0) Pageable pageable) {
+        Page<FuncionarioProjection> clients = funcionarioService.getAll(pageable);
+        return ResponseEntity.ok(PageableMapper.toDto(clients));
+    }
 }

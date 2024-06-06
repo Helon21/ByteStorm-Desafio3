@@ -29,9 +29,9 @@ public class FuncionarioController {
             responses = {
                     @ApiResponse(responseCode = "201", description = "Recurso criado com sucesso",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = FuncionarioRespostaDto.class))),
-                    @ApiResponse(responseCode = "409", description = "CPF do funcionário já cadastrado no sistema",
+                    @ApiResponse(responseCode = "409", description = "CPF informado já cadastrado no sistema",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = MensagemErro.class))),
-                    @ApiResponse(responseCode = "422", description = "Campos inválidos ou mal formatados",
+                    @ApiResponse(responseCode = "422", description = "Campos inválido(s) ou mal formatado(s)",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = MensagemErro.class)))
             })
     @PostMapping
@@ -40,9 +40,19 @@ public class FuncionarioController {
         return ResponseEntity.status(201).body(FuncionarioMapper.paraDto(funcionario));
     }
 
+    @Operation(summary = "Altera os dados de um Funcionário",
+            description = "Recurso o atualizar os dados funcionário no sistema.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Recurso alterado com sucesso",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = FuncionarioRespostaDto.class))),
+                    @ApiResponse(responseCode = "409", description = "CPF informado já cadastrado no sistema",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = MensagemErro.class))),
+                    @ApiResponse(responseCode = "422", description = "Campos inválido(s) ou mal formatado(s)",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = MensagemErro.class)))
+            })
     @PutMapping("/{id}")
     public ResponseEntity<FuncionarioRespostaDto> alterar(@PathVariable Long id, @RequestBody @Valid FuncionarioCriarDto FuncionarioCriardto) {
         Funcionario funcionario = funcionarioService.alterar(id, FuncionarioCriardto);
-        return ResponseEntity.status(200).body(FuncionarioMapper.paraDto(funcionario));
+        return ResponseEntity.ok().body(FuncionarioMapper.paraDto(funcionario));
     }
 }

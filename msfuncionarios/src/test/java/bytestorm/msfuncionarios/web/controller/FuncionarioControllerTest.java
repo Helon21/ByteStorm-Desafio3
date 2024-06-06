@@ -1,5 +1,7 @@
 package bytestorm.msfuncionarios.web.controller;
 
+import bytestorm.msfuncionarios.entity.Funcionario;
+import bytestorm.msfuncionarios.web.dto.FuncionarioAlterarStatusDto;
 import bytestorm.msfuncionarios.web.dto.FuncionarioCriarDto;
 import bytestorm.msfuncionarios.web.dto.FuncionarioRespostaDto;
 import bytestorm.msfuncionarios.web.exception.MensagemErro;
@@ -13,6 +15,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import java.time.LocalDate;
 
 import static bytestorm.msfuncionarios.commom.FuncionariosConstantes.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(scripts = "/sql/insert_funcionarios.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -109,5 +112,62 @@ public class FuncionarioControllerTest {
 
         org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
         org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(422);
+    }
+
+    @Test
+    public void alterarStatus_ComDadosValidos_RetornarFuncionarioComStatus200() {
+        FuncionarioAlterarStatusDto statusDto = new FuncionarioAlterarStatusDto();
+        statusDto.setStatus("ATIVO");
+
+        FuncionarioRespostaDto responseBody = testClient
+                .patch()
+                .uri("/api/v1/funcionarios/{id}", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(statusDto)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(FuncionarioRespostaDto.class)
+                .returnResult().getResponseBody();
+
+        assertThat(responseBody).isNotNull();
+        assertThat(responseBody.getStatus()).isEqualTo(Funcionario.Status.ATIVO);
+    }
+
+    @Test
+    public void alterarStatus_FuncionarioNaoEncontrado_RetornarMensagemErroStatus404() {
+        FuncionarioAlterarStatusDto statusDto = new FuncionarioAlterarStatusDto();
+        statusDto.setStatus("INATIVO");
+
+        MensagemErro responseBody = testClient
+                .patch()
+                .uri("/api/v1/funcionarios/{id}", 9999)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(statusDto)
+                .exchange()
+                .expectStatus().isNotFound()
+                .expectBody(MensagemErro.class)
+                .returnResult().getResponseBody();
+
+        assertThat(responseBody).isNotNull();
+        assertThat(responseBody.getStatus()).isEqualTo(404);
+    }
+
+    @Test
+    public void alterarStatus_ComDadosInvalidos_RetornarMensagemErroStatus422() {
+        FuncionarioAlterarStatusDto statusDto = new FuncionarioAlterarStatusDto();
+        statusDto.setStatus("STATUS_INVALIDO");
+
+        MensagemErro responseBody = testClient
+                .patch()
+                .uri("/api/v1/funcionarios/{id}", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(statusDto)
+                .exchange()
+                .expectStatus().isEqualTo(422)
+                .expectBody(MensagemErro.class)
+                .returnResult().getResponseBody();
+
+        assertThat(responseBody).isNotNull();
+        assertThat(responseBody.getStatus()).isEqualTo(422);
     }
 }

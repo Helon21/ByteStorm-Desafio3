@@ -1,7 +1,9 @@
 package bytestorm.msfuncionarios.service;
 
 import bytestorm.msfuncionarios.entity.Funcionario;
+import bytestorm.msfuncionarios.exceptions.FuncionarioNaoEncontradoException;
 import bytestorm.msfuncionarios.repository.FuncionarioRepository;
+import bytestorm.msfuncionarios.web.dto.FuncionarioAlterarStatusDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -48,6 +50,31 @@ public class FuncionarioServiceTest {
         when(funcionarioRepository.findByCpf(FUNCIONARIO_PADRAO_CRIAR_DTO.getCpf())).thenReturn(Optional.of(FUNCIONARIO_PADRAO));
 
         assertThatThrownBy(() -> funcionarioService.salvar(FUNCIONARIO_INVALIDO_CRIAR_DTO)).isInstanceOf(RuntimeException.class);
+    }
+
+    @Test
+    public void alterarStatus_ComFuncionarioExistente_DeveAlterarStatus() {
+        FuncionarioAlterarStatusDto statusDto = new FuncionarioAlterarStatusDto();
+        statusDto.setStatus("INATIVO");
+
+        when(funcionarioRepository.findById(JORGE.getId())).thenReturn(Optional.of(JORGE));
+        when(funcionarioRepository.save(JORGE)).thenReturn(JORGE);
+
+        Funcionario result = funcionarioService.alterarStatus(JORGE.getId(), statusDto);
+
+        assertThat(result.getStatus()).isEqualTo(Funcionario.Status.INATIVO);
+    }
+
+    @Test
+    public void alterarStatus_ComFuncionarioNaoExistente_DeveLancarExcecao() {
+        Long id = 1L;
+        FuncionarioAlterarStatusDto statusDto = new FuncionarioAlterarStatusDto();
+        statusDto.setStatus("INATIVO");
+
+        when(funcionarioRepository.findById(id)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> funcionarioService.alterarStatus(id, statusDto))
+                .isInstanceOf(FuncionarioNaoEncontradoException.class);
     }
 
 }

@@ -2,6 +2,7 @@ package bytestorm.msfuncionarios.web.controller;
 
 import bytestorm.msfuncionarios.web.dto.FuncionarioCriarDto;
 import bytestorm.msfuncionarios.web.dto.FuncionarioRespostaDto;
+import bytestorm.msfuncionarios.web.dto.PageableDto;
 import bytestorm.msfuncionarios.web.exception.MensagemErro;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -109,5 +110,90 @@ public class FuncionarioControllerTest {
 
         org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
         org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(422);
+    }
+
+    @Test
+    public void buscarFuncionario_ComIdExistente_RetornarFuncionarioComStatus200() {
+        FuncionarioRespostaDto responseBody = testClient
+                .get()
+                .uri("/api/v1/funcionarios/id/1")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(FuncionarioRespostaDto.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(responseBody.getId()).isEqualTo(1);
+    }
+
+    @Test
+    public void buscarFuncionario_ComIdInexistente_RetornarErrorMessageComStatus404() {
+        MensagemErro responseBody = testClient
+                .get()
+                .uri("/api/v1/funcionarios/id/10000000")
+                .exchange()
+                .expectStatus().isNotFound()
+                .expectBody(MensagemErro.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(404);
+    }
+
+    @Test
+    public void buscarFuncionario_ComCpfExistente_RetornarFuncionarioComStatus200() {
+        FuncionarioRespostaDto responseBody = testClient
+                .get()
+                .uri("/api/v1/funcionarios/cpf/80506962008")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(FuncionarioRespostaDto.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(responseBody.getCpf()).isEqualTo("80506962008");
+    }
+
+    @Test
+    public void buscarFuncionario_ComCpfInexistente_RetornarErrorMessageComStatus404() {
+        MensagemErro responseBody = testClient
+                .get()
+                .uri("/api/v1/funcionarios/cpf/69102077000")
+                .exchange()
+                .expectStatus().isNotFound()
+                .expectBody(MensagemErro.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(404);
+    }
+
+    @Test
+    public void buscarFuncionarios_ComPaginacao_RetornarClientesComStatus200() {
+        PageableDto responseBody = testClient
+                .get()
+                .uri("/api/v1/funcionarios")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(PageableDto.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(responseBody.getContent()).hasSize(5);
+        org.assertj.core.api.Assertions.assertThat(responseBody.getNumber()).isEqualTo(0);
+        org.assertj.core.api.Assertions.assertThat(responseBody.getTotalPages()).isEqualTo(2);
+
+        responseBody = testClient
+                .get()
+                .uri("/api/v1/funcionarios?size=1&page=1")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(PageableDto.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(responseBody.getContent().size()).isEqualTo(1);
+        org.assertj.core.api.Assertions.assertThat(responseBody.getNumber()).isEqualTo(1);
+        org.assertj.core.api.Assertions.assertThat(responseBody.getTotalPages()).isEqualTo(6);
     }
 }

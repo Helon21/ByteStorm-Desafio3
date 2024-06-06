@@ -41,6 +41,16 @@ public class FuncionarioController {
         return ResponseEntity.status(201).body(FuncionarioMapper.paraDto(funcionario));
     }
 
+    @Operation(summary = "Altera o status Funcionários",
+            description = "Recurso para alterar o status de um funcionário no sistema.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Status alterado com sucesso",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = FuncionarioRespostaDto.class))),
+                    @ApiResponse(responseCode = "404", description = "Funcionário não encontrado",
+                            content = @Content(mediaType = " application/json;charset=UTF-8", schema = @Schema(implementation = MensagemErro.class))),
+                    @ApiResponse(responseCode = "422", description = "Campos inválidos ou mal formatados",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = MensagemErro.class)))
+            })
     @PatchMapping("/{id}")
     public ResponseEntity<FuncionarioRespostaDto> alterarStatus(@PathVariable Long id, @RequestBody @Valid FuncionarioAlterarStatusDto statusDto) {
         Funcionario funcionario = funcionarioService.alterarStatus(id, statusDto);

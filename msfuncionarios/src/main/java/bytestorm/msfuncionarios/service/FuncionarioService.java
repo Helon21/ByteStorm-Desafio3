@@ -2,10 +2,14 @@ package bytestorm.msfuncionarios.service;
 
 import bytestorm.msfuncionarios.entity.Funcionario;
 import bytestorm.msfuncionarios.exceptions.CpfRepetidoException;
+import bytestorm.msfuncionarios.exceptions.FuncionarioNaoEncontradoException;
 import bytestorm.msfuncionarios.repository.FuncionarioRepository;
+import bytestorm.msfuncionarios.repository.projection.FuncionarioProjection;
 import bytestorm.msfuncionarios.web.dto.FuncionarioCriarDto;
 import bytestorm.msfuncionarios.web.dto.mapper.FuncionarioMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,4 +34,22 @@ public class FuncionarioService {
         return funcionarioRepository.save(funcionario);
     }
 
+    @Transactional(readOnly = true)
+    public Funcionario buscarFuncionarioPorId(Long id) {
+        return funcionarioRepository.findById(id).orElseThrow(
+                () -> new FuncionarioNaoEncontradoException("Funcionário com o id '" + id + "' não encontrado")
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public Funcionario buscarFuncionarioPorCpf(String cpf) {
+        return funcionarioRepository.findByCpf(cpf).orElseThrow(
+                () -> new FuncionarioNaoEncontradoException("Funcionário com o cpf '" + cpf + "' não encontrado")
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public Page<FuncionarioProjection> getAll(Pageable pageable) {
+        return funcionarioRepository.findAllPageable(pageable);
+    }
 }

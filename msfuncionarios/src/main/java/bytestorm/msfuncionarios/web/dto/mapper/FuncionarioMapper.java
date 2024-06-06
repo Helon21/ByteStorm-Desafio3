@@ -17,5 +17,13 @@ public class FuncionarioMapper {
     public static FuncionarioRespostaDto paraDto(Funcionario funcionario) {
         return new ModelMapper().map(funcionario, FuncionarioRespostaDto.class);
     }
+
+    public static Funcionario atualizarFuncionario(Funcionario funcionario, FuncionarioCriarDto funcionarioDto) {
+        funcionario.setNome(funcionarioDto.getNome());
+        funcionario.setCpf(funcionarioDto.getCpf());
+        funcionario.setDataNascimento(funcionarioDto.getDataNascimento());
+        funcionario.setSexo(Funcionario.Sexo.valueOf(funcionarioDto.getSexo()));
+        return funcionario;
+    }
     
 }

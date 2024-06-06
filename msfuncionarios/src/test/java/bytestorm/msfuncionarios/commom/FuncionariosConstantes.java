@@ -1,6 +1,7 @@
 package bytestorm.msfuncionarios.commom;
 
 import bytestorm.msfuncionarios.entity.Funcionario;
+import bytestorm.msfuncionarios.repository.projection.FuncionarioProjection;
 import bytestorm.msfuncionarios.web.dto.FuncionarioCriarDto;
 
 import java.time.LocalDate;
@@ -30,5 +31,29 @@ public class FuncionariosConstantes {
 
     public static final Funcionario PEDRO = new Funcionario(
             4L, "Pedro", "58480776064", LocalDate.of(2002, 3, 20), Funcionario.Status.ATIVO, Funcionario.Sexo.MASCULINO);
+
+    public static final FuncionarioCriarDto PEDRO_CRIAR_DTO = new FuncionarioCriarDto(
+            "Pedro", "58480776064", LocalDate.of(2002, 3, 20), "MASCULINO");
+
+    public static final FuncionarioCriarDto PEDRO_ALTERAR_DTO = new FuncionarioCriarDto(
+            "Pedro2", "58480776064", LocalDate.of(2002, 5, 21), "MASCULINO");
+
+
+    public static final FuncionarioProjection FUNCIONARIO_PROJECTION_PADRAO = new FuncionarioProjection() {
+        @Override
+        public Long getId() {
+            return 1L;
+        }
+
+        @Override
+        public String getNome() {
+            return "João Silva";
+        }
+
+        @Override
+        public String getCpf() {
+            return "123.456.789-00";
+        }
+    };
 
 }

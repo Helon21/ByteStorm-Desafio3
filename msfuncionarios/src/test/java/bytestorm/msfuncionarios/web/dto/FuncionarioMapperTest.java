@@ -37,4 +37,21 @@ public class FuncionarioMapperTest {
         assertEquals(funcionario.getStatus(), respostaDto.getStatus());
         assertEquals(funcionario.getSexo(), respostaDto.getSexo());
     }
+
+    @Test
+    public void testAtualizarFuncionario() {
+        Funcionario funcionario = new Funcionario(1L, "Pedro", "12345678900", LocalDate.of(2000, 1, 1), Funcionario.Status.ATIVO, Funcionario.Sexo.MASCULINO);
+        FuncionarioCriarDto atualizarDto = new FuncionarioCriarDto("João", "09876543211", LocalDate.of(1995, 5, 10), "MASCULINO");
+
+        Funcionario atualizado = FuncionarioMapper.atualizarFuncionario(funcionario, atualizarDto);
+
+        assertNotNull(atualizado);
+        assertEquals(atualizarDto.getNome(), atualizado.getNome());
+        assertEquals(atualizarDto.getCpf(), atualizado.getCpf());
+        assertEquals(atualizarDto.getDataNascimento(), atualizado.getDataNascimento());
+        assertEquals(Funcionario.Sexo.MASCULINO, atualizado.getSexo());
+        assertEquals(funcionario.getId(), atualizado.getId());
+        assertEquals(funcionario.getStatus(), atualizado.getStatus());
+
+    }
 }

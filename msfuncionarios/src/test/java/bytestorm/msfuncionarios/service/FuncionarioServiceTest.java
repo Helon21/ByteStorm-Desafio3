@@ -1,6 +1,7 @@
 package bytestorm.msfuncionarios.service;
 
 import bytestorm.msfuncionarios.entity.Funcionario;
+import bytestorm.msfuncionarios.exceptions.CpfRepetidoException;
 import bytestorm.msfuncionarios.exceptions.FuncionarioNaoEncontradoException;
 import bytestorm.msfuncionarios.repository.FuncionarioRepository;
 import bytestorm.msfuncionarios.repository.projection.FuncionarioProjection;
@@ -14,13 +15,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Optional;
 
 import static bytestorm.msfuncionarios.commom.FuncionariosConstantes.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -35,7 +37,7 @@ public class FuncionarioServiceTest {
     private FuncionarioRepository funcionarioRepository;
 
     @Test
-    public void criarAluno_ComDadosValidos_RetornarFunciona() {
+    public void criarFuncionario_ComDadosValidos_RetornarFuncionario() {
         when(funcionarioRepository.findByCpf(FUNCIONARIO_PADRAO_CRIAR_DTO.getCpf())).thenReturn(Optional.empty());
         when(funcionarioRepository.save(FUNCIONARIO_PADRAO)).thenReturn(FUNCIONARIO_PADRAO);
 
@@ -45,7 +47,7 @@ public class FuncionarioServiceTest {
     }
 
     @Test
-    public void criarAluno_ComDadosInvalidos_RetornarException() {
+    public void criarFuncionario_ComDadosInvalidos_RetornarException() {
         when(funcionarioRepository.findByCpf(FUNCIONARIO_PADRAO_CRIAR_DTO.getCpf())).thenReturn(Optional.empty());
         when(funcionarioRepository.save(FUNCIONARIO_INVALIDO)).thenThrow(DataIntegrityViolationException.class);
 
@@ -53,12 +55,56 @@ public class FuncionarioServiceTest {
     }
 
     @Test
-    public void criarAluno_ComCpfRepetido_RetornarException() {
+    public void criarFuncionario_ComCpfRepetido_RetornarException() {
         when(funcionarioRepository.findByCpf(FUNCIONARIO_PADRAO_CRIAR_DTO.getCpf())).thenReturn(Optional.of(FUNCIONARIO_PADRAO));
 
         assertThatThrownBy(() -> funcionarioService.salvar(FUNCIONARIO_INVALIDO_CRIAR_DTO)).isInstanceOf(RuntimeException.class);
     }
 
+    @Test
+    public void alterarFuncionario_ComDadosValidosEMesmoCpf_RetornarFuncionario200() {
+        when(funcionarioRepository.findById(PEDRO.getId())).thenReturn(Optional.of(PEDRO));
+        when(funcionarioRepository.findByCpf(PEDRO.getCpf())).thenReturn(Optional.of(PEDRO));
+        when(funcionarioRepository.save(PEDRO)).thenReturn(PEDRO);
+
+        Funcionario sut = funcionarioService.alterar(PEDRO.getId(), PEDRO_ALTERAR_DTO);
+
+        assertThat(sut).isEqualTo(PEDRO);
+    }
+
+    @Test
+    public void alterarFuncionario_ComDadosValidosENovoCpf_RetornarFuncionario200() {
+        when(funcionarioRepository.findById(PEDRO.getId())).thenReturn(Optional.of(PEDRO));
+        when(funcionarioRepository.findByCpf(PEDRO.getCpf())).thenReturn(Optional.empty());
+        when(funcionarioRepository.save(PEDRO)).thenReturn(PEDRO);
+
+        Funcionario sut = funcionarioService.alterar(PEDRO.getId(), PEDRO_ALTERAR_DTO);
+
+        assertThat(sut).isEqualTo(PEDRO);
+    }
+
+    @Test
+    public void alterarFuncionario_ComIdInexistente_DeveLancarFuncionarioNaoEncontradoException() {
+        when(funcionarioRepository.findById(PEDRO.getId())).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> funcionarioService.alterar(PEDRO.getId(), PEDRO_ALTERAR_DTO)).isInstanceOf(FuncionarioNaoEncontradoException.class);
+    }
+
+    @Test
+    public void alterarFuncionario_ComCpfJaCadastrado_DeveLancarCpfRepetidoException() {
+        Funcionario outroFuncionario = new Funcionario(
+                5L, "Outro Funcionario",
+                PEDRO_ALTERAR_DTO.getCpf(),
+                LocalDate.of(1990, 1, 1),
+                Funcionario.Status.ATIVO,
+                Funcionario.Sexo.MASCULINO
+        );
+
+        when(funcionarioRepository.findById(PEDRO.getId())).thenReturn(Optional.of(PEDRO));
+        when(funcionarioRepository.findByCpf(PEDRO_ALTERAR_DTO.getCpf())).thenReturn(Optional.of(outroFuncionario));
+
+        assertThatThrownBy(() -> funcionarioService.alterar(PEDRO.getId(), PEDRO_ALTERAR_DTO)).isInstanceOf(CpfRepetidoException.class);
+    }
 
     @Test
     public void buscarUsuarioPorId_ComIdExistente_RetornarFuncionario() {
@@ -104,5 +150,6 @@ public class FuncionarioServiceTest {
         assertEquals(FUNCIONARIO_PROJECTION_PADRAO.getId(), result.getTotalElements());
         assertEquals(FUNCIONARIO_PROJECTION_PADRAO.getNome(), result.getContent().get(0).getNome());
         assertEquals(FUNCIONARIO_PROJECTION_PADRAO.getCpf(), result.getContent().get(0).getCpf());
+
     }
 }

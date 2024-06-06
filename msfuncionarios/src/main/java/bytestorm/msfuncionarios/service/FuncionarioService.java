@@ -34,6 +34,20 @@ public class FuncionarioService {
         return funcionarioRepository.save(funcionario);
     }
 
+    @Transactional
+    public Funcionario alterar(Long id, FuncionarioCriarDto funcionarioCriarDto) {
+        Funcionario funcionarioExistente = funcionarioRepository.findById(id)
+                .orElseThrow(() -> new FuncionarioNaoEncontradoException("Funcionário com o id '" + id + "' não encontrado"));
+
+        Optional<Funcionario> funcionarioRepetido = funcionarioRepository.findByCpf(funcionarioCriarDto.getCpf());
+        if (funcionarioRepetido.isPresent() && !funcionarioRepetido.get().getId().equals(id)) {
+            throw new CpfRepetidoException("Funcionário com cpf " + funcionarioCriarDto.getCpf() + " já cadastrado");
+        }
+
+        Funcionario funcionario = FuncionarioMapper.atualizarFuncionario(funcionarioExistente, funcionarioCriarDto);
+        return funcionarioRepository.save(funcionario);
+    }
+
     @Transactional(readOnly = true)
     public Funcionario buscarFuncionarioPorId(Long id) {
         return funcionarioRepository.findById(id).orElseThrow(
@@ -52,4 +66,5 @@ public class FuncionarioService {
     public Page<FuncionarioProjection> getAll(Pageable pageable) {
         return funcionarioRepository.findAllPageable(pageable);
     }
+
 }

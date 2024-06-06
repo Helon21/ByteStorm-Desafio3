@@ -1,9 +1,10 @@
 package bytestorm.msfuncionarios.service;
 
 import bytestorm.msfuncionarios.entity.Funcionario;
-import bytestorm.msfuncionarios.exceptions.CpfRepetidoException;
 import bytestorm.msfuncionarios.exceptions.FuncionarioNaoEncontradoException;
 import bytestorm.msfuncionarios.repository.FuncionarioRepository;
+import bytestorm.msfuncionarios.web.dto.FuncionarioAlterarStatusDto;
+import bytestorm.msfuncionarios.exceptions.CpfRepetidoException;
 import bytestorm.msfuncionarios.repository.projection.FuncionarioProjection;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,7 +23,6 @@ import java.util.Optional;
 import static bytestorm.msfuncionarios.commom.FuncionariosConstantes.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -62,6 +62,18 @@ public class FuncionarioServiceTest {
     }
 
     @Test
+    public void alterarStatus_ComFuncionarioExistente_DeveAlterarStatus() {
+        FuncionarioAlterarStatusDto statusDto = new FuncionarioAlterarStatusDto();
+        statusDto.setStatus("INATIVO");
+
+        when(funcionarioRepository.findById(JORGE.getId())).thenReturn(Optional.of(JORGE));
+        when(funcionarioRepository.save(JORGE)).thenReturn(JORGE);
+
+        Funcionario result = funcionarioService.alterarStatus(JORGE.getId(), statusDto);
+
+        assertThat(result.getStatus()).isEqualTo(Funcionario.Status.INATIVO);
+    }
+
     public void alterarFuncionario_ComDadosValidosEMesmoCpf_RetornarFuncionario200() {
         when(funcionarioRepository.findById(PEDRO.getId())).thenReturn(Optional.of(PEDRO));
         when(funcionarioRepository.findByCpf(PEDRO.getCpf())).thenReturn(Optional.of(PEDRO));
@@ -152,4 +164,17 @@ public class FuncionarioServiceTest {
         assertEquals(FUNCIONARIO_PROJECTION_PADRAO.getCpf(), result.getContent().get(0).getCpf());
 
     }
+
+    @Test
+    public void alterarStatus_ComFuncionarioNaoExistente_DeveLancarExcecao() {
+        Long id = 1L;
+        FuncionarioAlterarStatusDto statusDto = new FuncionarioAlterarStatusDto();
+        statusDto.setStatus("INATIVO");
+
+        when(funcionarioRepository.findById(id)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> funcionarioService.alterarStatus(id, statusDto))
+                .isInstanceOf(FuncionarioNaoEncontradoException.class);
+    }
+
 }

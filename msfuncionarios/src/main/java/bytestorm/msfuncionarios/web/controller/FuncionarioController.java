@@ -3,6 +3,7 @@ package bytestorm.msfuncionarios.web.controller;
 import bytestorm.msfuncionarios.entity.Funcionario;
 import bytestorm.msfuncionarios.repository.projection.FuncionarioProjection;
 import bytestorm.msfuncionarios.service.FuncionarioService;
+import bytestorm.msfuncionarios.web.dto.FuncionarioAlterarStatusDto;
 import bytestorm.msfuncionarios.web.dto.FuncionarioRespostaDto;
 import bytestorm.msfuncionarios.web.dto.FuncionarioCriarDto;
 import bytestorm.msfuncionarios.web.dto.PageableDto;
@@ -113,8 +114,25 @@ public class FuncionarioController {
                     )
             })
     @GetMapping
-    public ResponseEntity<PageableDto> getAll(@Parameter(hidden = true) @PageableDefault(size=5, sort={"nome"}, page=0) Pageable pageable) {
+    public ResponseEntity<PageableDto> buscarTodos(@Parameter(hidden = true) @PageableDefault(size=5, sort={"nome"}, page=0) Pageable pageable) {
         Page<FuncionarioProjection> clients = funcionarioService.getAll(pageable);
         return ResponseEntity.ok(PageableMapper.toDto(clients));
     }
+
+    @Operation(summary = "Altera o status Funcionários",
+            description = "Recurso para alterar o status de um funcionário no sistema.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Status alterado com sucesso",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = FuncionarioRespostaDto.class))),
+                    @ApiResponse(responseCode = "404", description = "Funcionário não encontrado",
+                            content = @Content(mediaType = " application/json;charset=UTF-8", schema = @Schema(implementation = MensagemErro.class))),
+                    @ApiResponse(responseCode = "422", description = "Campos inválidos ou mal formatados",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = MensagemErro.class)))
+            })
+    @PatchMapping("/{id}")
+    public ResponseEntity<FuncionarioRespostaDto> alterarStatus(@PathVariable Long id, @RequestBody @Valid FuncionarioAlterarStatusDto statusDto) {
+        Funcionario funcionario = funcionarioService.alterarStatus(id, statusDto);
+        return ResponseEntity.ok().body(FuncionarioMapper.paraDto(funcionario));
+    }
+
 }

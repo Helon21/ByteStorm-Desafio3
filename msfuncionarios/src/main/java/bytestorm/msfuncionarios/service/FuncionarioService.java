@@ -4,6 +4,7 @@ import bytestorm.msfuncionarios.entity.Funcionario;
 import bytestorm.msfuncionarios.exceptions.CpfRepetidoException;
 import bytestorm.msfuncionarios.exceptions.FuncionarioNaoEncontradoException;
 import bytestorm.msfuncionarios.repository.FuncionarioRepository;
+import bytestorm.msfuncionarios.web.dto.FuncionarioAlterarStatusDto;
 import bytestorm.msfuncionarios.repository.projection.FuncionarioProjection;
 import bytestorm.msfuncionarios.web.dto.FuncionarioCriarDto;
 import bytestorm.msfuncionarios.web.dto.mapper.FuncionarioMapper;
@@ -65,6 +66,16 @@ public class FuncionarioService {
     @Transactional(readOnly = true)
     public Page<FuncionarioProjection> getAll(Pageable pageable) {
         return funcionarioRepository.findAllPageable(pageable);
+    }
+
+    @Transactional
+    public Funcionario alterarStatus(Long id, FuncionarioAlterarStatusDto statusDto) {
+        Funcionario funcionario = funcionarioRepository.findById(id)
+                .orElseThrow(() -> new FuncionarioNaoEncontradoException("Funcionário com o id '" + id + "' não encontrado"));
+
+        funcionario.setStatus(Funcionario.Status.valueOf(statusDto.getStatus()));
+
+        return funcionarioRepository.save(funcionario);
     }
 
 }

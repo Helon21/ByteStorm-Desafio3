@@ -14,7 +14,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"nome\": \"Matheus\",\r\n    \"cpf\": \"43855601020\",\r\n    \"dataNascimento\": \"2003-11-30\",\r\n    \"sexo\": \"MASCULINO\"\r\n}",
+					"raw": "{\r\n    \"nome\": \"Maria\",\r\n    \"cpf\": \"91181247047\",\r\n    \"dataNascimento\": \"2009-10-12\",\r\n    \"sexo\": \"FEMININO\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -89,7 +89,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8081/api/v1/funcionarios?page=0&size=2&sort=nome,asc",
+					"raw": "http://localhost:8081/api/v1/funcionarios",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -99,20 +99,6 @@
 						"api",
 						"v1",
 						"funcionarios"
-					],
-					"query": [
-						{
-							"key": "page",
-							"value": "0"
-						},
-						{
-							"key": "size",
-							"value": "2"
-						},
-						{
-							"key": "sort",
-							"value": "nome,asc"
-						}
 					]
 				}
 			},
@@ -133,7 +119,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8081/api/v1/funcionarios/271",
+					"raw": "http://localhost:8081/api/v1/funcionarios/279",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -143,7 +129,38 @@
 						"api",
 						"v1",
 						"funcionarios",
-						"271"
+						"279"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Copy",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"status\": \"ATIVO\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8081/api/v1/funcionarios/279",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"v1",
+						"funcionarios",
+						"279"
 					]
 				}
 			},

@@ -13,6 +13,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import java.time.LocalDate;
 
 import static bytestorm.msfuncionarios.commom.FuncionariosConstantes.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(scripts = "/sql/insert_funcionarios.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -34,10 +35,10 @@ public class FuncionarioControllerTest {
                 .expectBody(FuncionarioRespostaDto.class)
                 .returnResult().getResponseBody();
 
-        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
-        org.assertj.core.api.Assertions.assertThat(responseBody.getId()).isNotNull();
-        org.assertj.core.api.Assertions.assertThat(responseBody.getNome()).isEqualTo(FUNCIONARIO_PADRAO_CRIAR_DTO.getNome());
-        org.assertj.core.api.Assertions.assertThat(responseBody.getCpf()).isEqualTo(FUNCIONARIO_PADRAO_CRIAR_DTO.getCpf());
+        assertThat(responseBody).isNotNull();
+        assertThat(responseBody.getId()).isNotNull();
+        assertThat(responseBody.getNome()).isEqualTo(FUNCIONARIO_PADRAO_CRIAR_DTO.getNome());
+        assertThat(responseBody.getCpf()).isEqualTo(FUNCIONARIO_PADRAO_CRIAR_DTO.getCpf());
     }
 
     @Test
@@ -52,8 +53,8 @@ public class FuncionarioControllerTest {
                 .expectBody(MensagemErro.class)
                 .returnResult().getResponseBody();
 
-        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
-        org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(409);
+        assertThat(responseBody).isNotNull();
+        assertThat(responseBody.getStatus()).isEqualTo(409);
     }
 
     @Test
@@ -68,8 +69,8 @@ public class FuncionarioControllerTest {
                 .expectBody(MensagemErro.class)
                 .returnResult().getResponseBody();
 
-        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
-        org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(422);
+        assertThat(responseBody).isNotNull();
+        assertThat(responseBody.getStatus()).isEqualTo(422);
 
         responseBody = testClient
                 .post()
@@ -81,8 +82,8 @@ public class FuncionarioControllerTest {
                 .expectBody(MensagemErro.class)
                 .returnResult().getResponseBody();
 
-        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
-        org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(422);
+        assertThat(responseBody).isNotNull();
+        assertThat(responseBody.getStatus()).isEqualTo(422);
 
         responseBody = testClient
                 .post()
@@ -94,8 +95,8 @@ public class FuncionarioControllerTest {
                 .expectBody(MensagemErro.class)
                 .returnResult().getResponseBody();
 
-        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
-        org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(422);
+        assertThat(responseBody).isNotNull();
+        assertThat(responseBody.getStatus()).isEqualTo(422);
 
         responseBody = testClient
                 .post()
@@ -107,7 +108,81 @@ public class FuncionarioControllerTest {
                 .expectBody(MensagemErro.class)
                 .returnResult().getResponseBody();
 
-        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
-        org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(422);
+        assertThat(responseBody).isNotNull();
+        assertThat(responseBody.getStatus()).isEqualTo(422);
+    }
+
+    @Test
+    public void alterarFuncionario_ComDadosValidosEMesmoCpf_RetornarFuncionario200() {
+        FuncionarioRespostaDto responseBody = testClient
+                .put()
+                .uri("/api/v1/funcionarios/{id}", PEDRO.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(PEDRO_ALTERAR_DTO)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(FuncionarioRespostaDto.class)
+                .returnResult().getResponseBody();
+
+        assertThat(responseBody).isNotNull();
+        assertThat(responseBody.getId()).isEqualTo(PEDRO.getId());
+        assertThat(responseBody.getNome()).isEqualTo(PEDRO_ALTERAR_DTO.getNome());
+        assertThat(responseBody.getCpf()).isEqualTo(PEDRO_ALTERAR_DTO.getCpf());
+    }
+
+    @Test
+    public void alterarFuncionario_ComDadosValidosENovoCpf_RetornarFuncionario200() {
+        FuncionarioCriarDto novoDto = new FuncionarioCriarDto(
+                "Pedro2", "65688960043", LocalDate.of(2002, 5, 21), "MASCULINO");
+
+        FuncionarioRespostaDto responseBody = testClient
+                .put()
+                .uri("/api/v1/funcionarios/{id}", PEDRO.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(novoDto)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(FuncionarioRespostaDto.class)
+                .returnResult().getResponseBody();
+
+        assertThat(responseBody).isNotNull();
+        assertThat(responseBody.getId()).isEqualTo(PEDRO.getId());
+        assertThat(responseBody.getNome()).isEqualTo(novoDto.getNome());
+        assertThat(responseBody.getCpf()).isEqualTo(novoDto.getCpf());
+    }
+
+    @Test
+    public void alterarFuncionario_IdInexistente_DeveLancarFuncionarioNaoEncontradoException() {
+        MensagemErro responseBody = testClient
+                .put()
+                .uri("/api/v1/funcionarios/{id}", 999)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(PEDRO_ALTERAR_DTO)
+                .exchange()
+                .expectStatus().isNotFound()
+                .expectBody(MensagemErro.class)
+                .returnResult().getResponseBody();
+
+        assertThat(responseBody).isNotNull();
+        assertThat(responseBody.getStatus()).isEqualTo(404);
+    }
+
+    @Test
+    public void alterarFuncionario_ComCpfJaCadastrado_DeveLancarCpfRepetidoException() {
+        FuncionarioCriarDto dtoComCpfRepetido = new FuncionarioCriarDto(
+                "Pedro2", JORGE.getCpf(), LocalDate.of(2002, 5, 21), "MASCULINO");
+
+        MensagemErro responseBody = testClient
+                .put()
+                .uri("/api/v1/funcionarios/{id}", PEDRO.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(dtoComCpfRepetido)
+                .exchange()
+                .expectStatus().isEqualTo(409)
+                .expectBody(MensagemErro.class)
+                .returnResult().getResponseBody();
+
+        assertThat(responseBody).isNotNull();
+        assertThat(responseBody.getStatus()).isEqualTo(409);
     }
 }

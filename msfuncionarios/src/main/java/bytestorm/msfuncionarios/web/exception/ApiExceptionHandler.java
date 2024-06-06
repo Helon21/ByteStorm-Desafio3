@@ -1,6 +1,7 @@
 package bytestorm.msfuncionarios.web.exception;
 
 import bytestorm.msfuncionarios.exceptions.CpfRepetidoException;
+import bytestorm.msfuncionarios.exceptions.FuncionarioNaoEncontradoException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -27,6 +28,16 @@ public class ApiExceptionHandler {
                 .status(HttpStatus.CONFLICT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(new MensagemErro(request, HttpStatus.CONFLICT, ex.getMessage()));
+    }
+
+    @ExceptionHandler(FuncionarioNaoEncontradoException.class)
+    public ResponseEntity<MensagemErro> entityNotFoundException(RuntimeException ex,
+                                                                HttpServletRequest request) {
+        log.error("Api Error - ", ex);
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new MensagemErro(request, HttpStatus.NOT_FOUND, ex.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

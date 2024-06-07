@@ -10,6 +10,8 @@ public class PropostaConstantes {
 
     public final static Proposta PROPOSTA2 = new Proposta(2L, "Propor melhoria na educação", "Devemos focar na educação pois os jovens são o futuro da humanidade, e precisamos passar o conhecimento adiante para que não seja perdido", true);
 
+    public final static Proposta PROPOSTA_INVALIDA = new Proposta(3L, null, null, null);
+
     public final static Proposta PROPOSTA_ATIVA = new Proposta(1L, "Titulo da proposta", "Descrição da proposta", true);
 
     public final static Proposta PROPOSTA_INATIVA = new Proposta(1L, "Titulo da proposta", "Descrição da proposta", false);

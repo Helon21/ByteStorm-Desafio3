@@ -60,6 +60,7 @@ public class PropostaServiceTest {
 
     @Test
     public void InativarProposta_ComIdValido_RetornaPropostaInativa() {
+    public void InativarProposta_RetornaPropostaInativa() {
         when(propostaRepository.findById(ID_VALIDO)).thenReturn(Optional.of(PROPOSTA_ATIVA));
         when(propostaRepository.save(PROPOSTA_INATIVA)).thenReturn(PROPOSTA_INATIVA);
 
@@ -67,7 +68,6 @@ public class PropostaServiceTest {
 
         assertThat(sut.getAtivo()).isFalse();
     }
-
     @Test
     public void InativarProposta_ComIdInvalido_RetornarException() {
         when(propostaRepository.findById(ID_INVALIDO)).thenThrow(new PropostaNaoEncontradaException("Proposta não encontrada ou inexistente, verifique se o id digitado está correto"));

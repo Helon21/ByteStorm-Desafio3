@@ -28,9 +28,9 @@ public class Resultado {
     private Long idFuncionario;
     @Column(name = "data_votacao", nullable = false)
     private LocalDateTime dataVotacao;
-    @Column(name = "qtd_aprovada", nullable = false)
+    @Column(name = "qtd_aprovado", nullable = false)
     private Integer qtdAprovado;
-    @Column(name = "qtd_rejeitada",nullable = false)
+    @Column(name = "qtd_rejeitado",nullable = false)
     private Integer qtdRejeitado;
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)

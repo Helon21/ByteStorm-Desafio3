@@ -5,6 +5,13 @@ import bytestorm.msresultados.service.ResultadoService;
 import bytestorm.msresultados.specification.ResultadoSpecification;
 import bytestorm.msresultados.web.dto.PageableDto;
 import bytestorm.msresultados.web.dto.mapper.PageableMapper;
+import bytestorm.msresultados.web.expection.MensagemErro;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +24,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 
+import static io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("api/v1/resultados")
@@ -24,12 +33,49 @@ public class ResultadoController {
 
     private final ResultadoService resultadoService;
 
+    @Operation(summary = "Localizar um resultado por id", description = "Recurso para localizar um resultado pelo id.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Recurso localizado com sucesso.",
+                            content = @Content(mediaType = " application/json;charset=UTF-8", schema = @Schema(implementation = Resultado.class))),
+                    @ApiResponse(responseCode = "404", description = "resultado não encontrado.",
+                            content = @Content(mediaType = " application/json;charset=UTF-8", schema = @Schema(implementation = MensagemErro.class))),
+            })
     @GetMapping("/id/{id}")
     public ResponseEntity<Resultado> buscarPorId(@PathVariable Long id) {
         Resultado resultado = resultadoService.buscarResultadoPorId(id);
         return ResponseEntity.ok(resultado);
     }
 
+    @Operation(summary = "Recuperar lista de funcionários",
+            parameters = {
+                    @Parameter(in = QUERY, name = "titulo", description = "Filtra os resultados com base no título fornecido.",
+                            content = @Content(schema = @Schema(type = "string"))
+                    ),
+                    @Parameter(in = QUERY, name = "dataVotacao", description = "Filtra os resultados a partir da data especificada.",
+                            content = @Content(schema = @Schema(type = "string", format = "date-time"))
+                    ),
+                    @Parameter(in = QUERY, name = "idFuncionario", description = "Busca as propostas feita pelo id do funcionario.",
+                            content = @Content(schema = @Schema(type = "integer"))
+                    ),
+                    @Parameter(in = QUERY, name = "status", description = "Filtra os resultados com base no status fornecido: <br> 'aprovado' ou 'rejeitado'.",
+                            content = @Content(schema = @Schema(type = "string"))
+                    ),
+                    @Parameter(in = QUERY, name = "page", description = "Representa a página retornada.",
+                            content = @Content(schema = @Schema(type = "integer", defaultValue = "0"))
+                    ),
+                    @Parameter(in = QUERY, name = "size", description = "Representa o total de elementos por página.",
+                            content = @Content(schema = @Schema(type = "integer", defaultValue = "8"))
+                    ),
+                    @Parameter(in = QUERY, name = "direction", description = "Representa a ordenação do resultado.",
+                            content = @Content(schema = @Schema(type = "string", defaultValue = "asc")))
+            },
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Recurso recuperado com sucesso.",
+                            content = @Content(mediaType = " application/json;charset=UTF-8", schema = @Schema(implementation = PageableDto.class))
+                    ),
+                    @ApiResponse(responseCode = "400", description = "Parametros inválido(s) ou mal formatado(s).",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = MensagemErro.class)))
+            })
     @GetMapping(value = "/buscarResultados")
     public ResponseEntity<PageableDto> buscarResultados(
             @RequestParam(value = "titulo", required = false) String titulo,

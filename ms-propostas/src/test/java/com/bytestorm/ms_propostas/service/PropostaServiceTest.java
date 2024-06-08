@@ -60,7 +60,6 @@ public class PropostaServiceTest {
 
     @Test
     public void InativarProposta_ComIdValido_RetornaPropostaInativa() {
-    public void InativarProposta_RetornaPropostaInativa() {
         when(propostaRepository.findById(ID_VALIDO)).thenReturn(Optional.of(PROPOSTA_ATIVA));
         when(propostaRepository.save(PROPOSTA_INATIVA)).thenReturn(PROPOSTA_INATIVA);
 

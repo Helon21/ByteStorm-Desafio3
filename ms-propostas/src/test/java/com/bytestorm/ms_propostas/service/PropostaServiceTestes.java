@@ -67,6 +67,7 @@ public class PropostaServiceTestes {
 
         assertThat(sut.getAtivo()).isFalse();
     }
+
     @Test
     public void InativarProposta_ComIdInvalido_RetornarException() {
         when(propostaRepository.findById(ID_INVALIDO)).thenThrow(new PropostaNaoEncontradaException("Proposta não encontrada ou inexistente, verifique se o id digitado está correto"));

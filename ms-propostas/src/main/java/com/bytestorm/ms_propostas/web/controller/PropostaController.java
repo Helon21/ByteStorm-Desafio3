@@ -1,4 +1,4 @@
-package com.bytestorm.ms_propostas.web;
+package com.bytestorm.ms_propostas.web.controller;
 
 import com.bytestorm.ms_propostas.entity.Proposta;
 import com.bytestorm.ms_propostas.service.PropostaService;

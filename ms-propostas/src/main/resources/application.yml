@@ -18,3 +18,13 @@ springdoc:
   api-docs:
     path: /docs-propostas
   packages-to-scan: com.bytestorm.ms_propostas.web
+
+server:
+  port: 0
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+  instance:
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}

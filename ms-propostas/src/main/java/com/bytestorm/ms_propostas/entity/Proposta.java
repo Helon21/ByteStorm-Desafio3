@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -33,6 +34,12 @@ public class Proposta {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private  Status status;
+
+    @Column(name = "data_votacao", nullable = true)
+    private LocalDateTime dataVotacao;
+
+    @Column(name = "tempo_votacao_minutos", nullable = true)
+    private Integer tempoVotacaoMinutos;
 
     public enum Status {
         ATIVO, INATIVO, EM_VOTACAO, VOTACAO_ENCERRADA

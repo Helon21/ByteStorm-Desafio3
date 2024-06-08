@@ -16,11 +16,11 @@ public class PropostaConstantes {
 
     public final static Proposta PROPOSTA_INATIVA = new Proposta(1L, "Titulo da proposta", "Descrição da proposta", false);
 
-    public final static PropostaCriarDTO DTO_PROPOSTA = new PropostaCriarDTO("Propor melhoria na saúde", "Deve se focar na saúde pois é uma área que necessita de maiores cuidados");
+    public final static PropostaCriarDTO DTO_CRIAR_PROPOSTA = new PropostaCriarDTO("Propor melhoria na saúde", "Deve se focar na saúde pois é uma área que necessita de maiores cuidados");
 
     public final static PropostaCriarDTO DTO_INVALIDO = new PropostaCriarDTO("", "");
 
-    public final static PropostaRespostaDTO DTO_RESPOSTA = new PropostaRespostaDTO(1L, "Propor melhoria na saúde", "Deve se focar na saúde pois é uma área que necessita de maiores cuidados", true);
+    public final static PropostaRespostaDTO DTO_RESPOSTA_PROPOSTA = new PropostaRespostaDTO(1L, "Propor melhoria na saúde", "Deve se focar na saúde pois é uma área que necessita de maiores cuidados", true);
 
     public final static Long ID_VALIDO = 1L;
 

@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
-public class PropostaServiceTest {
+public class PropostaServiceTestes {
 
     @Mock
     private PropostaRepository propostaRepository;

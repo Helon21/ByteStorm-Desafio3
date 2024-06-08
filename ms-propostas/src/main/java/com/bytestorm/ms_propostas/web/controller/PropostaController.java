@@ -47,10 +47,8 @@ public class PropostaController {
     )
     @PostMapping
     public ResponseEntity<PropostaRespostaDTO> criarProposta(@RequestBody @Valid PropostaCriarDTO dto) {
-        Proposta proposta = PropostaMapper.paraProposta(dto);
-        propostaService.criarProposta(proposta);
-        PropostaRespostaDTO propostaCriada = PropostaMapper.propostaParaDTO(proposta);
-        return ResponseEntity.status(HttpStatus.CREATED).body(propostaCriada);
+        Proposta proposta = propostaService.criarProposta(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(PropostaMapper.propostaParaDTO(proposta));
     }
 
 

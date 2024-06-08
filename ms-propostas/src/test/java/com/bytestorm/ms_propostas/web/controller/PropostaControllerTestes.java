@@ -1,7 +1,7 @@
 package com.bytestorm.ms_propostas.web.controller;
 
 import com.bytestorm.ms_propostas.entity.Proposta;
-import com.bytestorm.ms_propostas.exception.PropostaInativaException;
+import com.bytestorm.ms_propostas.exception.PropostaNaoPodeSerInativadaException;
 import com.bytestorm.ms_propostas.exception.PropostaNaoEncontradaException;
 import com.bytestorm.ms_propostas.service.PropostaService;
 import com.bytestorm.ms_propostas.web.dto.PropostaCriarDTO;
@@ -109,7 +109,7 @@ public class PropostaControllerTestes {
     public void inativarProposta_ComIdValidoEPropostaInativa_RetornaStatus304() throws Exception {
         Proposta proposta = PropostaMapper.paraProposta(DTO_CRIAR_PROPOSTA);
         PROPOSTA1.setAtivo(false);
-        when(propostaService.inativarProposta(ID_VALIDO)).thenThrow(new PropostaInativaException("Esta proposta já está inativa"));
+        when(propostaService.inativarProposta(ID_VALIDO)).thenThrow(new PropostaNaoPodeSerInativadaException("Esta proposta já está inativa"));
 
         mockMvc.perform(
                 patch("/api/v1/propostas/inabilitar-proposta/1")

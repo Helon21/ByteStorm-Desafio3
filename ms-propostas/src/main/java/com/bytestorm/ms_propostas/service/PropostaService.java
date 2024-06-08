@@ -40,7 +40,7 @@ public class PropostaService {
         }
 
         Proposta proposta = PropostaMapper.paraProposta(propostaDto);
-        proposta.setAtivo(true);
+        proposta.setStatus(Proposta.Status.ATIVO);
 
         return propostaRepository.save(proposta);
     }
@@ -50,11 +50,11 @@ public class PropostaService {
                 () -> new PropostaNaoEncontradaException("Proposta não encontrada ou inexistente, verifique se o id digitado está correto")
         );
 
-        if (proposta.getAtivo()) {
-            proposta.setAtivo(false);
+        if (proposta.getStatus() == Proposta.Status.ATIVO || proposta.getStatus() == Proposta.Status.INATIVO) {
+            proposta.setStatus(Proposta.Status.INATIVO);
             return propostaRepository.save(proposta);
         } else {
-            throw new PropostaInativaException("Esta proposta já está inativa");
+            throw new PropostaNaoPodeSerInativadaException("Esta proposta está com status: '" + proposta.getStatus() + "' e por isso não pode ser inativada");
         }
     }
 

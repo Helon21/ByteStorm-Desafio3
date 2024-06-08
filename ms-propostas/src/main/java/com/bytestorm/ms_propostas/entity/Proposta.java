@@ -30,18 +30,22 @@ public class Proposta {
     @Column(name="descricao", nullable = false, length = 500)
     private String descricao;
 
-    @Column(name="ativo")
-    private Boolean ativo;
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private  Status status;
+
+    public enum Status {
+        ATIVO, INATIVO, EM_VOTACAO, VOTACAO_ENCERRADA
+    }
 
     @OneToMany(mappedBy = "id.propostaId")
     private List<Voto> voto = new ArrayList<>();
 
-    public Proposta(Long id, Long funcionarioId, String titulo, String descricao, Boolean ativo) {
+    public Proposta(Long id, Long funcionarioId, String titulo, String descricao) {
         this.id = id;
         this.funcionarioId = funcionarioId;
         this.titulo = titulo;
         this.descricao = descricao;
-        this.ativo = ativo;
     }
 
     @Override

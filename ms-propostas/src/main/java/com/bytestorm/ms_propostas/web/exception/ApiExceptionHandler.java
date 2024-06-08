@@ -1,10 +1,7 @@
 package com.bytestorm.ms_propostas.web.exception;
 
 import com.bytestorm.ms_propostas.exception.*;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.Getter;
-import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -28,7 +25,7 @@ public class ApiExceptionHandler {
                 .body(new ErrorMessage(request, HttpStatus.NOT_FOUND, ex.getMessage()));
     }
 
-    @ExceptionHandler(PropostaInativaException.class)
+    @ExceptionHandler(PropostaNaoPodeSerInativadaException.class)
     public ResponseEntity<ErrorMessage> propostaInativaException(RuntimeException ex, HttpServletRequest request) {
         log.error("Api Error - ", ex);
         return ResponseEntity

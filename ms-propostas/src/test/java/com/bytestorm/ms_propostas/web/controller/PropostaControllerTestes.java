@@ -4,6 +4,7 @@ import com.bytestorm.ms_propostas.entity.Proposta;
 import com.bytestorm.ms_propostas.exception.PropostaInativaException;
 import com.bytestorm.ms_propostas.exception.PropostaNaoEncontradaException;
 import com.bytestorm.ms_propostas.service.PropostaService;
+import com.bytestorm.ms_propostas.web.dto.PropostaCriarDTO;
 import com.bytestorm.ms_propostas.web.dto.mapper.PropostaMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
@@ -63,7 +64,7 @@ public class PropostaControllerTestes {
     @Test
     public void criarProposta_ComDadosValidos_ReturnPropostaComStatus201() throws Exception {
         Proposta proposta = PropostaMapper.paraProposta(DTO_CRIAR_PROPOSTA);
-        when(propostaService.criarProposta(any(Proposta.class))).thenReturn(proposta);
+        when(propostaService.criarProposta(any(PropostaCriarDTO.class))).thenReturn(proposta);
 
         mockMvc.perform(
                         post("/api/v1/propostas")

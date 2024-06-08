@@ -11,7 +11,7 @@ public class MapperTestes {
 
     @Test
     public void converterDTOParaProposta_RetornaPropostaDTO() {
-        PropostaCriarDTO criarDto = new PropostaCriarDTO("algum titulo", "alguma descrição");
+        PropostaCriarDTO criarDto = new PropostaCriarDTO("algum titulo", "alguma descrição", 1L);
         Proposta proposta = PropostaMapper.paraProposta(criarDto);
 
         assertNotNull(proposta);
@@ -21,7 +21,7 @@ public class MapperTestes {
 
     @Test
     public void converterPropostaParaDTO_RetornaPropostaRespostaDTO() {
-        Proposta proposta = new Proposta(1L, "Alguma proposta", "Alguma descricao", true);
+        Proposta proposta = new Proposta(1L, 1L,"Alguma proposta", "Alguma descricao", true);
         PropostaRespostaDTO propostaDTO = PropostaMapper.propostaParaDTO(proposta);
 
 

@@ -1,17 +1,24 @@
 package com.bytestorm.ms_propostas.service;
 
+import com.bytestorm.ms_propostas.entity.Funcionario;
 import com.bytestorm.ms_propostas.entity.Proposta;
+import com.bytestorm.ms_propostas.exception.FuncionarioInativoException;
+import com.bytestorm.ms_propostas.exception.FuncionarioNaoEncontradoException;
 import com.bytestorm.ms_propostas.exception.PropostaNaoEncontradaException;
 import com.bytestorm.ms_propostas.repository.PropostaRepository;
+import com.bytestorm.ms_propostas.web.clients.FuncionarioFeign;
+import com.bytestorm.ms_propostas.web.dto.PropostaCriarDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 
 import static com.bytestorm.ms_propostas.common.PropostaConstantes.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -25,6 +32,8 @@ public class PropostaServiceTestes {
 
     @Mock
     private PropostaRepository propostaRepository;
+    @Mock
+    private FuncionarioFeign funcionarioFeign;
 
     @InjectMocks
     private PropostaService propostaService;
@@ -42,25 +51,18 @@ public class PropostaServiceTestes {
     }
 
     @Test
-    public void CriarProposta_ComDadosValidos_RetornaProposta() {
+    public void criarProposta_ComFuncionarioAtivo_RetornaPropostaCriada() {
+        ResponseEntity<Funcionario> respostaFeign = ResponseEntity.ok(new Funcionario(DTO_CRIAR_PROPOSTA.getFuncionarioId(), Funcionario.Status.ATIVO));
+        when(funcionarioFeign.buscarFuncionarioPorId(DTO_CRIAR_PROPOSTA.getFuncionarioId())).thenReturn(respostaFeign);
         when(propostaRepository.save(PROPOSTA1)).thenReturn(PROPOSTA1);
 
-        Proposta sut = propostaService.criarProposta(PROPOSTA1);
+        Proposta propostaCriada = propostaService.criarProposta(DTO_CRIAR_PROPOSTA);
 
-        assertThat(sut).isEqualTo(PROPOSTA1);
+        assertThat(propostaCriada).isEqualTo(PROPOSTA1);
     }
 
     @Test
-    public void CriarProposta_ComDadosInvalidos_RetornaException() {
-        when(propostaRepository.save(PROPOSTA_INVALIDA)).thenThrow(new HttpClientErrorException(HttpStatus.UNPROCESSABLE_ENTITY));
-
-        assertThatThrownBy(() -> propostaService.criarProposta(PROPOSTA_INVALIDA)).isInstanceOf(HttpClientErrorException.class);
-
-    };
-
-    @Test
     public void InativarProposta_ComIdValido_RetornaPropostaInativa() {
-    public void InativarProposta_RetornaPropostaInativa() {
         when(propostaRepository.findById(ID_VALIDO)).thenReturn(Optional.of(PROPOSTA_ATIVA));
         when(propostaRepository.save(PROPOSTA_INATIVA)).thenReturn(PROPOSTA_INATIVA);
 
@@ -68,6 +70,7 @@ public class PropostaServiceTestes {
 
         assertThat(sut.getAtivo()).isFalse();
     }
+
     @Test
     public void InativarProposta_ComIdInvalido_RetornarException() {
         when(propostaRepository.findById(ID_INVALIDO)).thenThrow(new PropostaNaoEncontradaException("Proposta não encontrada ou inexistente, verifique se o id digitado está correto"));

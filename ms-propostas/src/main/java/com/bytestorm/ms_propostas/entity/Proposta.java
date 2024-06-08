@@ -36,6 +36,14 @@ public class Proposta {
     @OneToMany(mappedBy = "id.propostaId")
     private List<Voto> voto = new ArrayList<>();
 
+    public Proposta(Long id, Long funcionarioId, String titulo, String descricao, Boolean ativo) {
+        this.id = id;
+        this.funcionarioId = funcionarioId;
+        this.titulo = titulo;
+        this.descricao = descricao;
+        this.ativo = ativo;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

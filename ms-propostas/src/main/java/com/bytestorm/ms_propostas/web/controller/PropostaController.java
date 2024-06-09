@@ -2,6 +2,7 @@ package com.bytestorm.ms_propostas.web.controller;
 
 import com.bytestorm.ms_propostas.entity.Proposta;
 import com.bytestorm.ms_propostas.service.PropostaService;
+import com.bytestorm.ms_propostas.web.dto.IniciarVotacaoDTO;
 import com.bytestorm.ms_propostas.web.dto.PropostaCriarDTO;
 import com.bytestorm.ms_propostas.web.dto.PropostaRespostaDTO;
 import com.bytestorm.ms_propostas.web.dto.mapper.PropostaMapper;
@@ -70,6 +71,12 @@ public class PropostaController {
     @PatchMapping("inabilitar-proposta/{id}")
     public ResponseEntity<PropostaRespostaDTO> inativarProposta(@PathVariable Long id) {
         Proposta proposta = propostaService.inativarProposta(id);
+        return ResponseEntity.ok(PropostaMapper.propostaParaDTO(proposta));
+    }
+
+    @PatchMapping("iniciar-votacao/{id}")
+    public ResponseEntity<PropostaRespostaDTO> iniciarVotacao(@PathVariable Long id, @RequestBody @Valid IniciarVotacaoDTO dto) {
+        Proposta proposta = propostaService.iniciarVotacao(id, dto);
         return ResponseEntity.ok(PropostaMapper.propostaParaDTO(proposta));
     }
 }

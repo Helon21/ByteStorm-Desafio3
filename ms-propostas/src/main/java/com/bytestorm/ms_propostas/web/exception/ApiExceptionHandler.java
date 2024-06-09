@@ -34,7 +34,7 @@ public class ApiExceptionHandler {
                 .body(new ErrorMessage(request, HttpStatus.NOT_MODIFIED, ex.getMessage()));
     }
 
-    @ExceptionHandler(FuncionarioInativoException.class)
+    @ExceptionHandler({FuncionarioInativoException.class, PropostaNaoPodeEntrarEmVotacao.class})
     public ResponseEntity<ErrorMessage> funcionarioInativaException(RuntimeException ex, HttpServletRequest request) {
         log.error("Api Error - ", ex);
         return ResponseEntity

@@ -1,10 +1,11 @@
-package com.bytestorm.ms_propostas.web;
+package com.bytestorm.ms_propostas.web.controller;
 
 import com.bytestorm.ms_propostas.entity.Proposta;
 import com.bytestorm.ms_propostas.service.PropostaService;
 import com.bytestorm.ms_propostas.web.dto.PropostaCriarDTO;
 import com.bytestorm.ms_propostas.web.dto.PropostaRespostaDTO;
 import com.bytestorm.ms_propostas.web.dto.mapper.PropostaMapper;
+import com.bytestorm.ms_propostas.web.exception.ErrorMessage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -43,14 +44,18 @@ public class PropostaController {
             responses = {
                     @ApiResponse(responseCode = "201", description = "Proposta criada com sucesso",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = PropostaRespostaDTO.class))),
+                    @ApiResponse(responseCode = "404", description = "Id funcionario não encontrado",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
+                    @ApiResponse(responseCode = "400", description = "Funcionario inativado",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
+                    @ApiResponse(responseCode = "422", description = "Campos invalidos ou mal formatados",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
             }
     )
     @PostMapping
     public ResponseEntity<PropostaRespostaDTO> criarProposta(@RequestBody @Valid PropostaCriarDTO dto) {
-        Proposta proposta = PropostaMapper.paraProposta(dto);
-        propostaService.criarProposta(proposta);
-        PropostaRespostaDTO propostaCriada = PropostaMapper.propostaParaDTO(proposta);
-        return ResponseEntity.status(HttpStatus.CREATED).body(propostaCriada);
+        Proposta proposta = propostaService.criarProposta(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(PropostaMapper.propostaParaDTO(proposta));
     }
 
 
@@ -58,6 +63,8 @@ public class PropostaController {
             responses = {
                     @ApiResponse(responseCode = "200", description = "Proposta inabilitada com sucesso",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = PropostaRespostaDTO.class))),
+                    @ApiResponse(responseCode = "404", description = "Proposta não encontrado",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
             }
     )
     @PatchMapping("inabilitar-proposta/{id}")

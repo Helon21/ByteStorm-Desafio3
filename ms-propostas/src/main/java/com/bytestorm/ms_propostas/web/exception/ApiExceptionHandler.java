@@ -1,7 +1,6 @@
 package com.bytestorm.ms_propostas.web.exception;
 
-import com.bytestorm.ms_propostas.exception.PropostaInativaException;
-import com.bytestorm.ms_propostas.exception.PropostaNaoEncontradaException;
+import com.bytestorm.ms_propostas.exception.*;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
@@ -20,8 +19,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class ApiExceptionHandler {
 
-    @ExceptionHandler(PropostaNaoEncontradaException.class)
-    public ResponseEntity<ErrorMessage> propostaNaoEncontrada(RuntimeException ex, HttpServletRequest request) {
+    @ExceptionHandler({PropostaNaoEncontradaException.class, FuncionarioNaoEncontradoException.class})
+    public ResponseEntity<ErrorMessage> entidadeNaoEncontrada(RuntimeException ex, HttpServletRequest request) {
         log.error("Api Error - ", ex);
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
@@ -36,6 +35,24 @@ public class ApiExceptionHandler {
                 .status(HttpStatus.NOT_MODIFIED)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(new ErrorMessage(request, HttpStatus.NOT_MODIFIED, ex.getMessage()));
+    }
+
+    @ExceptionHandler(FuncionarioInativoException.class)
+    public ResponseEntity<ErrorMessage> funcionarioInativaException(RuntimeException ex, HttpServletRequest request) {
+        log.error("Api Error - ", ex);
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new ErrorMessage(request, HttpStatus.BAD_REQUEST, ex.getMessage()));
+    }
+
+    @ExceptionHandler(ErroComunicacaoMicroservicesException.class)
+    public ResponseEntity<ErrorMessage> handleErroComunicacaoMicroservices(ErroComunicacaoMicroservicesException ex, HttpServletRequest request) {
+        log.error("Api Error - ", ex);
+        return ResponseEntity
+                .status(ex.getStatus())
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new ErrorMessage(request, HttpStatus.valueOf(ex.getStatus()), ex.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

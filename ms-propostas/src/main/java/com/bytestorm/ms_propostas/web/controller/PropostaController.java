@@ -2,6 +2,7 @@ package com.bytestorm.ms_propostas.web.controller;
 
 import com.bytestorm.ms_propostas.entity.Proposta;
 import com.bytestorm.ms_propostas.service.PropostaService;
+import com.bytestorm.ms_propostas.web.dto.IniciarVotacaoDTO;
 import com.bytestorm.ms_propostas.web.dto.PropostaCriarDTO;
 import com.bytestorm.ms_propostas.web.dto.PropostaRespostaDTO;
 import com.bytestorm.ms_propostas.web.dto.mapper.PropostaMapper;
@@ -10,6 +11,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "Propostas", description = "Contém todas as operações relativas a entidade proposta")
 @RestController
 @RequestMapping("/api/v1/propostas")
 public class PropostaController {
@@ -70,6 +73,24 @@ public class PropostaController {
     @PatchMapping("inabilitar-proposta/{id}")
     public ResponseEntity<PropostaRespostaDTO> inativarProposta(@PathVariable Long id) {
         Proposta proposta = propostaService.inativarProposta(id);
+        return ResponseEntity.ok(PropostaMapper.propostaParaDTO(proposta));
+    }
+
+    @Operation(summary = "Iniciar votação", description = "Recurso para iniciar o processo de votação de uma proposta",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Proposta iniciada com sucesso",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = PropostaRespostaDTO.class))),
+                    @ApiResponse(responseCode = "404", description = "Proposta não encontrado",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
+                    @ApiResponse(responseCode = "400", description = "Proposta não pode entrar em votação",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
+                    @ApiResponse(responseCode = "422", description = "Campos invalidos ou mal formatados",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
+            }
+    )
+    @PatchMapping("iniciar-votacao/{id}")
+    public ResponseEntity<PropostaRespostaDTO> iniciarVotacao(@PathVariable Long id, @RequestBody @Valid IniciarVotacaoDTO dto) {
+        Proposta proposta = propostaService.iniciarVotacao(id, dto);
         return ResponseEntity.ok(PropostaMapper.propostaParaDTO(proposta));
     }
 }

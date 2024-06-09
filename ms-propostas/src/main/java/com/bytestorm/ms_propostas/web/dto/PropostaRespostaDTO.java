@@ -1,11 +1,12 @@
 package com.bytestorm.ms_propostas.web.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import com.bytestorm.ms_propostas.entity.Proposta;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -13,16 +14,12 @@ import lombok.Setter;
 @NoArgsConstructor
 public class PropostaRespostaDTO {
 
-    @NotNull
     private Long id;
-
-    @NotBlank
+    private Long funcionarioId;
     private String titulo;
-
-    @NotBlank
     private String descricao;
-
-    @NotNull
-    private Boolean ativo;
+    private Proposta.Status status;
+    private LocalDateTime dataVotacao;
+    private Integer tempoVotacaoMinutos;
 
 }

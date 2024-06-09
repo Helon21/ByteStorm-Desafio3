@@ -4,9 +4,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.NOT_MODIFIED)
-public class PropostaInativaException extends RuntimeException {
+public class PropostaNaoPodeSerInativadaException extends RuntimeException {
 
-    public PropostaInativaException(String msg) {
+    public PropostaNaoPodeSerInativadaException(String msg) {
         super(msg);
     }
 }

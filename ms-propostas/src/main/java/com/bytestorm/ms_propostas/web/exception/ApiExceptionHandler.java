@@ -1,10 +1,7 @@
 package com.bytestorm.ms_propostas.web.exception;
 
 import com.bytestorm.ms_propostas.exception.*;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.Getter;
-import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -28,7 +25,7 @@ public class ApiExceptionHandler {
                 .body(new ErrorMessage(request, HttpStatus.NOT_FOUND, ex.getMessage()));
     }
 
-    @ExceptionHandler(PropostaInativaException.class)
+    @ExceptionHandler(PropostaNaoPodeSerInativadaException.class)
     public ResponseEntity<ErrorMessage> propostaInativaException(RuntimeException ex, HttpServletRequest request) {
         log.error("Api Error - ", ex);
         return ResponseEntity
@@ -37,13 +34,22 @@ public class ApiExceptionHandler {
                 .body(new ErrorMessage(request, HttpStatus.NOT_MODIFIED, ex.getMessage()));
     }
 
-    @ExceptionHandler(FuncionarioInativoException.class)
+    @ExceptionHandler({FuncionarioInativoException.class, PropostaNaoPodeEntrarEmVotacao.class, PropostaNaoEstaEmVotacaoException.class})
     public ResponseEntity<ErrorMessage> funcionarioInativaException(RuntimeException ex, HttpServletRequest request) {
         log.error("Api Error - ", ex);
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(new ErrorMessage(request, HttpStatus.BAD_REQUEST, ex.getMessage()));
+    }
+
+    @ExceptionHandler(VotoJaExisteException.class)
+    public ResponseEntity<ErrorMessage> handleVotoJaExisteException(VotoJaExisteException ex, HttpServletRequest request) {
+        log.error("Api Error - ", ex);
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new ErrorMessage(request, HttpStatus.CONFLICT, ex.getMessage()));
     }
 
     @ExceptionHandler(ErroComunicacaoMicroservicesException.class)

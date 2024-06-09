@@ -1,17 +1,12 @@
 package com.bytestorm.ms_propostas.service;
 
-import com.bytestorm.ms_propostas.entity.Funcionario;
 import com.bytestorm.ms_propostas.entity.Proposta;
 import com.bytestorm.ms_propostas.exception.*;
 import com.bytestorm.ms_propostas.repository.PropostaRepository;
-import com.bytestorm.ms_propostas.web.clients.FuncionarioFeign;
 import com.bytestorm.ms_propostas.web.dto.IniciarVotacaoDTO;
 import com.bytestorm.ms_propostas.web.dto.PropostaCriarDTO;
 import com.bytestorm.ms_propostas.web.dto.mapper.PropostaMapper;
-import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,12 +21,12 @@ import java.util.concurrent.TimeUnit;
 public class PropostaService {
 
     private final PropostaRepository propostaRepository;
-    private final FuncionarioFeign funcionarioFeign;
+    private final FuncionarioService funcionarioService;
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
-    public PropostaService(PropostaRepository propostaRepository, FuncionarioFeign funcionarioFeign) {
+    public PropostaService(PropostaRepository propostaRepository, FuncionarioService funcionarioService) {
         this.propostaRepository = propostaRepository;
-        this.funcionarioFeign = funcionarioFeign;
+        this.funcionarioService = funcionarioService;
     }
 
     @Transactional(readOnly = true)
@@ -39,9 +34,15 @@ public class PropostaService {
         return propostaRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
+    public Proposta buscarPropostaPorId(Long id) {
+        return propostaRepository.findById(id)
+                .orElseThrow(() -> new PropostaNaoEncontradaException("Proposta com o id '" + id + "' não encontrada!"));
+    }
+
     @Transactional
     public Proposta criarProposta(PropostaCriarDTO propostaDto) {
-        if (!funcionarioEhAtivo(propostaDto)) {
+        if (!funcionarioService.funcionarioEhAtivo(propostaDto.getFuncionarioId())) {
             throw new FuncionarioInativoException("Funcionario com id '"+ propostaDto.getFuncionarioId() +"' está inativado e não pode criar propostas");
         }
 
@@ -86,28 +87,6 @@ public class PropostaService {
             propostaRepository.save(proposta);
             log.info("Votação da proposta com id " + propostaId + " encerrada.");
         }
-    }
-
-    private boolean funcionarioEhAtivo(PropostaCriarDTO propostaDto){
-        try {
-            ResponseEntity<Funcionario> dadosFuncionarioResponse = funcionarioFeign.buscarFuncionarioPorId(propostaDto.getFuncionarioId());
-            log.info("Status do " + propostaDto.getFuncionarioId() + ": "+ dadosFuncionarioResponse.getBody().getStatus());
-            if (dadosFuncionarioResponse.getBody().getStatus() == Funcionario.Status.ATIVO)
-                return true;
-            else
-                return false;
-        } catch (FeignException.FeignClientException e){
-            int status = e.status();
-            if(HttpStatus.NOT_FOUND.value() == status){
-                throw new FuncionarioNaoEncontradoException("Funcionario com id '"+ propostaDto.getFuncionarioId() +"' não encontrado!");
-            }
-            throw new ErroComunicacaoMicroservicesException(e.getMessage(), status);
-        }
-    }
-
-    private Proposta buscarPropostaPorId(Long id) {
-        return propostaRepository.findById(id)
-                .orElseThrow(() -> new PropostaNaoEncontradaException("Proposta com o id '" + id + "' não encontrada!"));
     }
 
     private void validarPropostaParaVotacao(Proposta proposta) {

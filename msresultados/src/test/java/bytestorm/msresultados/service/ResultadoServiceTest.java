@@ -34,19 +34,19 @@ public class ResultadoServiceTest {
     private ResultadoRepository resultadoRepository;
 
     @Test
-    public void buscarResultadoPorId_ComIdExistente_RetornarResultado() {
-        when(resultadoRepository.findById(PROPOSTA_1.getId())).thenReturn(Optional.of(PROPOSTA_1));
+    public void buscarResultadoPorPropostaId_ComIdExistente_RetornarResultado() {
+        when(resultadoRepository.findByPropostaId(PROPOSTA_1.getId())).thenReturn(Optional.of(PROPOSTA_1));
 
-        Resultado sut = resultadoService.buscarResultadoPorId(PROPOSTA_1.getId());
+        Resultado sut = resultadoService.buscarResultadoPorPropostaId(PROPOSTA_1.getId());
 
         assertThat(sut).isEqualTo(PROPOSTA_1);
     }
 
     @Test
-    public void buscarResultadoPorId_ComIdInexistente_RetornarException() {
-        when(resultadoRepository.findById(1L)).thenReturn(Optional.empty());
+    public void buscarResultadoPorPropostaId_ComIdInexistente_RetornarException() {
+        when(resultadoRepository.findByPropostaId(1L)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> resultadoService.buscarResultadoPorId(1L)).isInstanceOf(ResultadoNaoEncontradoException.class);
+        assertThatThrownBy(() -> resultadoService.buscarResultadoPorPropostaId(1L)).isInstanceOf(ResultadoNaoEncontradoException.class);
     }
 
     @Test

@@ -92,7 +92,9 @@ public class ResultadoController {
         var pageable = PageRequest.of(page, size, Sort.by(sortDirection, "id"));
         var spec = new ResultadoSpecification(titulo, dataVotacao, idFuncionario, status);
 
-        Page<Resultado> resultado = resultadoService.buscarResultados(spec, pageable);
-        return ResponseEntity.ok(PageableMapper.toDto(resultado));
+        Page<Resultado> resultadoPage  = resultadoService.buscarResultados(spec, pageable);
+        Page<ResultadoRespostaDto> dtoPage = resultadoPage.map(ResultadoMapper::toDto);
+
+        return ResponseEntity.ok(PageableMapper.toDto(dtoPage));
     }
 }

@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 
 import static com.bytestorm.ms_propostas.common.PropostaConstantes.*;
+import static com.bytestorm.ms_propostas.entity.Proposta.Status.INATIVO;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -68,7 +69,7 @@ public class PropostaServiceTestes {
 
         Proposta sut = propostaService.inativarProposta(ID_VALIDO);
 
-        assertThat(sut.getAtivo()).isFalse();
+        assertThat(sut.getStatus()).isEqualTo(INATIVO);
     }
 
     @Test
@@ -82,7 +83,7 @@ public class PropostaServiceTestes {
 
     @Test
     public void InativarProposta_ComIdValidoEPropostaInativa_RetornaException() {
-        PROPOSTA1.setAtivo(false);
+        PROPOSTA1.setStatus(INATIVO);
         when(propostaRepository.findById(ID_VALIDO)).thenReturn(Optional.of(PROPOSTA1));
 
         assertThatThrownBy(() -> propostaService.inativarProposta(ID_VALIDO))

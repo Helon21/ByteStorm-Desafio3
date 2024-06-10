@@ -21,7 +21,7 @@ public class MapperTestes {
 
     @Test
     public void converterPropostaParaDTO_RetornaPropostaRespostaDTO() {
-        Proposta proposta = new Proposta(1L, 1L,"Alguma proposta", "Alguma descricao", true);
+        Proposta proposta = new Proposta(1L, 1L, "Alguma descrição", "Alguma descrição");
         PropostaRespostaDTO propostaDTO = PropostaMapper.propostaParaDTO(proposta);
 
 
@@ -29,6 +29,6 @@ public class MapperTestes {
         assertNotNull(propostaDTO.getId());
         assertEquals(proposta.getTitulo(), propostaDTO.getTitulo());
         assertEquals(proposta.getDescricao(), propostaDTO.getDescricao());
-        assertNotNull(propostaDTO.getAtivo());
+        assertNotNull(propostaDTO.getStatus());
     }
 }

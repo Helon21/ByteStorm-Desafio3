@@ -18,6 +18,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.List;
 
 import static com.bytestorm.ms_propostas.common.PropostaConstantes.*;
+import static com.bytestorm.ms_propostas.entity.Proposta.Status.ATIVO;
+import static com.bytestorm.ms_propostas.entity.Proposta.Status.INATIVO;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
@@ -38,10 +40,10 @@ public class PropostaControllerTestes {
     @MockBean
     private PropostaService propostaService;
 
-    @AfterEach
-    public void afterEach() {
-        PROPOSTA1.setAtivo(true);
-    }
+//    @AfterEach
+//    public void afterEach() {
+//        PROPOSTA1.setStatus();
+//    }
 
     @Test
     public void buscarTodasAsPropostas_RetornaPropostasComStatus200() throws Exception {
@@ -58,7 +60,7 @@ public class PropostaControllerTestes {
                 .andExpect(jsonPath("$[1].id", is(2)))
                 .andExpect(jsonPath("$[1].titulo", is("Propor melhoria na educação")))
                 .andExpect(jsonPath("$[1].descricao", is("Devemos focar na educação pois os jovens são o futuro da humanidade, e precisamos passar o conhecimento adiante para que não seja perdido")))
-                .andExpect(jsonPath("$[1].ativo", is(true)));
+                .andExpect(jsonPath("$[1].status", is(ATIVO)));
     }
 
     @Test
@@ -72,7 +74,7 @@ public class PropostaControllerTestes {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.titulo", is(proposta.getTitulo())))
                 .andExpect(jsonPath("$.descricao", is(proposta.getDescricao())))
-                .andExpect(jsonPath("$.ativo", is(proposta.getAtivo())));
+                .andExpect(jsonPath("$.status", is(proposta.getStatus())));
     }
 
     @Test
@@ -108,7 +110,7 @@ public class PropostaControllerTestes {
     @Test
     public void inativarProposta_ComIdValidoEPropostaInativa_RetornaStatus304() throws Exception {
         Proposta proposta = PropostaMapper.paraProposta(DTO_CRIAR_PROPOSTA);
-        PROPOSTA1.setAtivo(false);
+        PROPOSTA1.setStatus(INATIVO);
         when(propostaService.inativarProposta(ID_VALIDO)).thenThrow(new PropostaNaoPodeSerInativadaException("Esta proposta já está inativa"));
 
         mockMvc.perform(

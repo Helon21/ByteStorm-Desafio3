@@ -1,9 +1,6 @@
 spring:
   application:
     name: msresultados
-  mvc:
-    locale-resolver: fixed
-    locale: pt_BR
   jpa:
     show-sql: true
     properties:
@@ -19,6 +16,9 @@ spring:
     console:
       enabled: true
       path: /h2-console
+  web:
+    locale-resolver: fixed
+    locale: pt_BR
 
 logging:
   level:
@@ -36,4 +36,11 @@ springdoc:
   packagesToScan: bytestorm.msresultados.web.controller
 
 server:
-  port: 8082
+  port: 0
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+  instance:
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}

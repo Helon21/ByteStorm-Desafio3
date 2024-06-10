@@ -2,8 +2,10 @@ package bytestorm.msresultados.web.dto.mapper;
 
 import bytestorm.msresultados.entity.Resultado;
 import bytestorm.msresultados.web.dto.ResultadoCriarDto;
+import bytestorm.msresultados.web.dto.ResultadoRespostaDto;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.modelmapper.ModelMapper;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ResultadoMapper {
@@ -20,7 +22,10 @@ public class ResultadoMapper {
                 dto.getQtdRejeitado(),
                 Resultado.Status.valueOf(dto.getStatus())
         );
+    }
 
+    public static ResultadoRespostaDto toDto(Resultado resultado) {
+        return new ModelMapper().map(resultado, ResultadoRespostaDto.class);
     }
 
 }

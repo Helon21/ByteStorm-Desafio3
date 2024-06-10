@@ -23,9 +23,9 @@ public class ResultadoService {
     private final ResultadoRepository resultadoRepository;
 
     @Transactional(readOnly = true)
-    public Resultado buscarResultadoPorId(Long id) {
-        return resultadoRepository.findById(id).orElseThrow(
-                () -> new ResultadoNaoEncontradoException("Resultado com o id '" + id + "' não encontrado")
+    public Resultado buscarResultadoPorPropostaId(Long propostaId) {
+        return resultadoRepository.findByPropostaId(propostaId).orElseThrow(
+                () -> new ResultadoNaoEncontradoException("Resultado com o proposta id '" + propostaId + "' não encontrado")
         );
     }
 

@@ -4,7 +4,9 @@ import bytestorm.msresultados.entity.Resultado;
 import bytestorm.msresultados.service.ResultadoService;
 import bytestorm.msresultados.specification.ResultadoSpecification;
 import bytestorm.msresultados.web.dto.PageableDto;
+import bytestorm.msresultados.web.dto.ResultadoRespostaDto;
 import bytestorm.msresultados.web.dto.mapper.PageableMapper;
+import bytestorm.msresultados.web.dto.mapper.ResultadoMapper;
 import bytestorm.msresultados.web.expection.MensagemErro;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -33,17 +35,17 @@ public class ResultadoController {
 
     private final ResultadoService resultadoService;
 
-    @Operation(summary = "Localizar um resultado por id", description = "Recurso para localizar um resultado pelo id.",
+    @Operation(summary = "Localizar um resultado por id da proposta", description = "Recurso para localizar um resultado pelo id da proposta.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Recurso localizado com sucesso.",
-                            content = @Content(mediaType = " application/json;charset=UTF-8", schema = @Schema(implementation = Resultado.class))),
+                            content = @Content(mediaType = " application/json;charset=UTF-8", schema = @Schema(implementation = ResultadoRespostaDto.class))),
                     @ApiResponse(responseCode = "404", description = "resultado não encontrado.",
                             content = @Content(mediaType = " application/json;charset=UTF-8", schema = @Schema(implementation = MensagemErro.class))),
             })
     @GetMapping("/id/{id}")
-    public ResponseEntity<Resultado> buscarPorId(@PathVariable Long id) {
-        Resultado resultado = resultadoService.buscarResultadoPorId(id);
-        return ResponseEntity.ok(resultado);
+    public ResponseEntity<ResultadoRespostaDto> buscarPorPropostaId(@PathVariable Long id) {
+        Resultado resultado = resultadoService.buscarResultadoPorPropostaId(id);
+        return ResponseEntity.ok(ResultadoMapper.toDto(resultado));
     }
 
     @Operation(summary = "Recuperar lista de funcionários",

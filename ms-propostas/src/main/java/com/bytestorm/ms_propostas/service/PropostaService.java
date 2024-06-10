@@ -1,7 +1,6 @@
 package com.bytestorm.ms_propostas.service;
 
 import com.bytestorm.ms_propostas.entity.Proposta;
-import com.bytestorm.ms_propostas.entity.Voto;
 import com.bytestorm.ms_propostas.exception.*;
 import com.bytestorm.ms_propostas.repository.PropostaRepository;
 import com.bytestorm.ms_propostas.repository.VotoRepository;
@@ -82,6 +81,7 @@ public class PropostaService {
         configurarVotacao(proposta, tempoVotacaoMin);
 
         scheduler.schedule(() -> encerrarVotacao(proposta.getId()), tempoVotacaoMin, TimeUnit.MINUTES);
+        log.info("Votação da proposta com id {} iniciada e será encerrada em {} minutos.", id, tempoVotacaoMin);
 
         return propostaRepository.save(proposta);
     }
@@ -93,9 +93,11 @@ public class PropostaService {
         if (proposta.getStatus() == Proposta.Status.EM_VOTACAO) {
             proposta.setStatus(Proposta.Status.VOTACAO_ENCERRADA);
             propostaRepository.save(proposta);
+            log.info("Votação da proposta com id {} encerrada.", propostaId);
 
             ResultadoDTO dto = criarResultadoDTO(proposta);
             kafkaTemplate.send("resultado-topico", dto);
+            log.info("Mensagem enviada para o Kafka: " + dto);
         }
     }
 

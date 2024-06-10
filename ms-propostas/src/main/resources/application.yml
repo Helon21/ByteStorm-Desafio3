@@ -19,6 +19,14 @@ spring:
       enabled: true
       path: /h2-console
 
+logging:
+  level:
+    org:
+      apache:
+        kafka: ERROR
+    springframework:
+      kafka: ERROR
+
 springdoc:
   swagger-ui:
     path: /docs-propostas.html

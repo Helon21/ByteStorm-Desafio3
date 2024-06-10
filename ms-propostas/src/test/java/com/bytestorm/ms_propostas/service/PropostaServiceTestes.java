@@ -1,92 +1,148 @@
 package com.bytestorm.ms_propostas.service;
 
-import com.bytestorm.ms_propostas.entity.Funcionario;
 import com.bytestorm.ms_propostas.entity.Proposta;
-import com.bytestorm.ms_propostas.exception.FuncionarioInativoException;
-import com.bytestorm.ms_propostas.exception.FuncionarioNaoEncontradoException;
-import com.bytestorm.ms_propostas.exception.PropostaNaoEncontradaException;
+import com.bytestorm.ms_propostas.exception.*;
 import com.bytestorm.ms_propostas.repository.PropostaRepository;
-import com.bytestorm.ms_propostas.web.clients.FuncionarioFeign;
+import com.bytestorm.ms_propostas.repository.VotoRepository;
 import com.bytestorm.ms_propostas.web.dto.PropostaCriarDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.kafka.core.KafkaTemplate;
 
 import static com.bytestorm.ms_propostas.common.PropostaConstantes.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.util.Arrays;
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ScheduledExecutorService;
+
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class PropostaServiceTestes {
 
     @Mock
+    private FuncionarioService funcionarioService;
+    @Mock
     private PropostaRepository propostaRepository;
     @Mock
-    private FuncionarioFeign funcionarioFeign;
+    private VotoRepository votoRepository;
+    @Mock
+    private KafkaTemplate<String, Serializable> kafkaTemplate;
+    @Mock
+    private ScheduledExecutorService scheduler;
+    @Captor
+    private ArgumentCaptor<Runnable> captor;
+
 
     @InjectMocks
     private PropostaService propostaService;
 
     @Test
-    public void buscarTodasAsPropostas_RetornaTodasAsPropostas() {
-        List<Proposta> listaPropostas = Arrays.asList(PROPOSTA1, PROPOSTA2);
+    public void buscarPropostaPorId_QuandoPropostaExiste_RetornaProposta() {
+        when(propostaRepository.findById(PROPOSTA1.getId())).thenReturn(Optional.of(PROPOSTA1));
 
-        when(propostaRepository.findAll()).thenReturn(listaPropostas);
+        Proposta propostaEncontrada = propostaService.buscarPropostaPorId(PROPOSTA1.getId());
 
-        List<Proposta> sut = propostaService.buscarTodasPropostas();
-
-        assertThat(sut).isEqualTo(listaPropostas);
-
+        assertEquals(PROPOSTA1, propostaEncontrada);
+        verify(propostaRepository, times(1)).findById(PROPOSTA1.getId());
     }
 
     @Test
-    public void criarProposta_ComFuncionarioAtivo_RetornaPropostaCriada() {
-        ResponseEntity<Funcionario> respostaFeign = ResponseEntity.ok(new Funcionario(DTO_CRIAR_PROPOSTA.getFuncionarioId(), Funcionario.Status.ATIVO));
-        when(funcionarioFeign.buscarFuncionarioPorId(DTO_CRIAR_PROPOSTA.getFuncionarioId())).thenReturn(respostaFeign);
+    public void buscarPropostaPorId_QuandoPropostaNaoExiste_LancaExcecao() {
+        Long id = 1L;
+        when(propostaRepository.findById(id)).thenReturn(Optional.empty());
+
+        assertThrows(PropostaNaoEncontradaException.class, () -> propostaService.buscarPropostaPorId(id));
+        verify(propostaRepository, times(1)).findById(id);
+    }
+
+    @Test
+    public void buscarTodasPropostas_DeveRetornarListaDePropostas() {
+        List<Proposta> propostasMock = new ArrayList<>();
+        propostasMock.add(new Proposta());
+        propostasMock.add(new Proposta());
+        when(propostaRepository.findAll()).thenReturn(propostasMock);
+
+        List<Proposta> propostas = propostaService.buscarTodasPropostas();
+
+        assertEquals(propostasMock.size(), propostas.size());
+        verify(propostaRepository, times(1)).findAll();
+    }
+
+    @Test
+    public void criarProposta_ComFuncionarioAtivo_RetornarProposta() {
+        // Arrange
+        PropostaCriarDTO dto = new PropostaCriarDTO("Teste", "Descrição teste", 1L);
+        Proposta proposta = new Proposta(1L, dto.getFuncionarioId(), dto.getTitulo(), dto.getDescricao());
+        when(funcionarioService.funcionarioEhAtivo(any())).thenReturn(true);
+        when(propostaRepository.save(any())).thenReturn(proposta);
+
+        // Act
+        Proposta propostaCriada = propostaService.criarProposta(dto);
+
+        // Assert
+        assertThat(propostaCriada).isNotNull();
+        assertThat(propostaCriada.getFuncionarioId()).isEqualTo(dto.getFuncionarioId());
+        assertThat(propostaCriada.getTitulo()).isEqualTo(dto.getTitulo());
+        assertThat(propostaCriada.getDescricao()).isEqualTo(dto.getDescricao());
+        assertThat(propostaCriada.getStatus()).isEqualTo(Proposta.Status.ATIVO);
+        assertThat(propostaCriada.getDataVotacao()).isNull();
+        assertThat(propostaCriada.getTempoVotacaoMinutos()).isNull();
+        verify(propostaRepository, times(1)).save(any());
+    }
+
+    @Test
+    public void criarProposta_ComFuncionarioInativo_ThrowsException() {
+        PropostaCriarDTO propostaDto = new PropostaCriarDTO();
+        propostaDto.setFuncionarioId(1L);
+
+        when(funcionarioService.funcionarioEhAtivo(1L)).thenReturn(false);
+
+
+        assertThrows(FuncionarioInativoException.class, () -> propostaService.criarProposta(propostaDto));
+        verify(propostaRepository, never()).save(any());
+    }
+
+    @Test
+    public void inativarProposta_QuandoPropostaAtiva_InativaProposta() {
+        when(propostaRepository.findById(PROPOSTA1.getId())).thenReturn(Optional.of(PROPOSTA1));
         when(propostaRepository.save(PROPOSTA1)).thenReturn(PROPOSTA1);
 
-        Proposta propostaCriada = propostaService.criarProposta(DTO_CRIAR_PROPOSTA);
+        Proposta propostaInativada = propostaService.inativarProposta(PROPOSTA1.getId());
 
-        assertThat(propostaCriada).isEqualTo(PROPOSTA1);
+        assertEquals(Proposta.Status.INATIVO, propostaInativada.getStatus());
+        verify(propostaRepository, times(1)).save(PROPOSTA1);
     }
 
     @Test
-    public void InativarProposta_ComIdValido_RetornaPropostaInativa() {
-        when(propostaRepository.findById(ID_VALIDO)).thenReturn(Optional.of(PROPOSTA_ATIVA));
-        when(propostaRepository.save(PROPOSTA_INATIVA)).thenReturn(PROPOSTA_INATIVA);
+    public void inativarProposta_QuandoPropostaEmVotacao_LancaExcecao() {
+        Proposta proposta = new Proposta();
+        proposta.setId(1L);
+        proposta.setStatus(Proposta.Status.EM_VOTACAO);
 
-        Proposta sut = propostaService.inativarProposta(ID_VALIDO);
+        when(propostaRepository.findById(proposta.getId())).thenReturn(Optional.of(proposta));
 
-        assertThat(sut.getAtivo()).isFalse();
+        assertThrows(PropostaNaoPodeSerInativadaException.class, () -> propostaService.inativarProposta(proposta.getId()));
+        verify(propostaRepository, never()).save(proposta);
     }
 
     @Test
-    public void InativarProposta_ComIdInvalido_RetornarException() {
-        when(propostaRepository.findById(ID_INVALIDO)).thenThrow(new PropostaNaoEncontradaException("Proposta não encontrada ou inexistente, verifique se o id digitado está correto"));
+    public void inativarProposta_QuandoPropostaEmVotacaoEncerrada_LancaExcecao() {
+        Proposta proposta = new Proposta();
+        proposta.setId(1L);
+        proposta.setStatus(Proposta.Status.VOTACAO_ENCERRADA);
 
-        assertThatThrownBy(() -> propostaService.inativarProposta(ID_INVALIDO))
-                .isInstanceOf(RuntimeException.class)
-                .hasMessage("Proposta não encontrada ou inexistente, verifique se o id digitado está correto");
-    }
+        when(propostaRepository.findById(proposta.getId())).thenReturn(Optional.of(proposta));
 
-    @Test
-    public void InativarProposta_ComIdValidoEPropostaInativa_RetornaException() {
-        PROPOSTA1.setAtivo(false);
-        when(propostaRepository.findById(ID_VALIDO)).thenReturn(Optional.of(PROPOSTA1));
-
-        assertThatThrownBy(() -> propostaService.inativarProposta(ID_VALIDO))
-                .isInstanceOf(RuntimeException.class)
-                .hasMessage("Esta proposta já está inativa");
+        assertThrows(PropostaNaoPodeSerInativadaException.class, () -> propostaService.inativarProposta(proposta.getId()));
+        verify(propostaRepository, never()).save(proposta);
     }
 }

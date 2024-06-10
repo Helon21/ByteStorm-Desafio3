@@ -17,8 +17,16 @@ spring:
     driverClassName: org.h2.Driver
   h2:
     console:
-      enabled: true
+      enabled: false
       path: /h2-console
+
+logging:
+  level:
+    org:
+      apache:
+        kafka: ERROR
+    springframework:
+      kafka: ERROR
 
 springdoc:
   swagger-ui:

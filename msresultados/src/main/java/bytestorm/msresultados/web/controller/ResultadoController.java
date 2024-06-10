@@ -56,7 +56,7 @@ public class ResultadoController {
                     @Parameter(in = QUERY, name = "dataVotacao", description = "Filtra os resultados a partir da data especificada.",
                             content = @Content(schema = @Schema(type = "string", format = "date-time"))
                     ),
-                    @Parameter(in = QUERY, name = "idFuncionario", description = "Busca as propostas feita pelo id do funcionario.",
+                    @Parameter(in = QUERY, name = "funcionarioId", description = "Busca as propostas feita pelo id do funcionario.",
                             content = @Content(schema = @Schema(type = "integer"))
                     ),
                     @Parameter(in = QUERY, name = "status", description = "Filtra os resultados com base no status fornecido: <br> 'aprovado' ou 'rejeitado'.",
@@ -82,7 +82,7 @@ public class ResultadoController {
     public ResponseEntity<PageableDto> buscarResultados(
             @RequestParam(value = "titulo", required = false) String titulo,
             @RequestParam(value = "dataVotacao", required = false) LocalDateTime dataVotacao,
-            @RequestParam(value = "idFuncionario", required = false) Long idFuncionario,
+            @RequestParam(value = "funcionarioId", required = false) Long funcionarioId,
             @RequestParam(value = "status", required = false) String status,
             @RequestParam(value = "page", defaultValue = "0") Integer page,
             @RequestParam(value = "size", defaultValue = "8") Integer size,
@@ -90,7 +90,7 @@ public class ResultadoController {
     ) {
         var sortDirection = "desc".equalsIgnoreCase(direction) ? Sort.Direction.DESC : Sort.Direction.ASC;
         var pageable = PageRequest.of(page, size, Sort.by(sortDirection, "id"));
-        var spec = new ResultadoSpecification(titulo, dataVotacao, idFuncionario, status);
+        var spec = new ResultadoSpecification(titulo, dataVotacao, funcionarioId, status);
 
         Page<Resultado> resultadoPage  = resultadoService.buscarResultados(spec, pageable);
         Page<ResultadoRespostaDto> dtoPage = resultadoPage.map(ResultadoMapper::toDto);

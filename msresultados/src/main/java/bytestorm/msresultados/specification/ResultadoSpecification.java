@@ -12,13 +12,13 @@ public class ResultadoSpecification implements Specification<Resultado> {
 
     private String titulo;
     private LocalDateTime dataVotacao;
-    private Long idFuncionario;
+    private Long funcionarioId;
     private String status;
 
-    public ResultadoSpecification(String titulo, LocalDateTime dataVotacao, Long idFuncionario, String status) {
+    public ResultadoSpecification(String titulo, LocalDateTime dataVotacao, Long funcionarioId, String status) {
         this.titulo = titulo;
         this.dataVotacao = dataVotacao;
-        this.idFuncionario = idFuncionario;
+        this.funcionarioId = funcionarioId;
         this.status = status;
     }
 
@@ -34,8 +34,8 @@ public class ResultadoSpecification implements Specification<Resultado> {
             predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("dataVotacao"), dataVotacao));
         }
         
-        if (idFuncionario != null) {
-            predicates.add(criteriaBuilder.equal(root.get("idFuncionario"), idFuncionario));
+        if (funcionarioId != null) {
+            predicates.add(criteriaBuilder.equal(root.get("funcionarioId"), funcionarioId));
         }
         
         if (status != null) {

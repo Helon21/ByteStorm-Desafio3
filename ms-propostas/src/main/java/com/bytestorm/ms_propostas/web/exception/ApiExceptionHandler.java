@@ -2,23 +2,21 @@ package com.bytestorm.ms_propostas.web.exception;
 
 import com.bytestorm.ms_propostas.exception.*;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@Slf4j
 @RestControllerAdvice
 public class ApiExceptionHandler {
 
     @ExceptionHandler({PropostaNaoEncontradaException.class, FuncionarioNaoEncontradoException.class})
     public ResponseEntity<ErrorMessage> entidadeNaoEncontrada(RuntimeException ex, HttpServletRequest request) {
-        log.error("Api Error - ", ex);
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -27,7 +25,6 @@ public class ApiExceptionHandler {
 
     @ExceptionHandler(PropostaNaoPodeSerInativadaException.class)
     public ResponseEntity<ErrorMessage> propostaInativaException(RuntimeException ex, HttpServletRequest request) {
-        log.error("Api Error - ", ex);
         return ResponseEntity
                 .status(HttpStatus.NOT_MODIFIED)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -36,7 +33,6 @@ public class ApiExceptionHandler {
 
     @ExceptionHandler({FuncionarioInativoException.class, PropostaNaoPodeEntrarEmVotacao.class, PropostaNaoEstaEmVotacaoException.class})
     public ResponseEntity<ErrorMessage> funcionarioInativaException(RuntimeException ex, HttpServletRequest request) {
-        log.error("Api Error - ", ex);
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -45,7 +41,6 @@ public class ApiExceptionHandler {
 
     @ExceptionHandler(VotoJaExisteException.class)
     public ResponseEntity<ErrorMessage> handleVotoJaExisteException(VotoJaExisteException ex, HttpServletRequest request) {
-        log.error("Api Error - ", ex);
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -54,7 +49,6 @@ public class ApiExceptionHandler {
 
     @ExceptionHandler(ErroComunicacaoMicroservicesException.class)
     public ResponseEntity<ErrorMessage> handleErroComunicacaoMicroservices(ErroComunicacaoMicroservicesException ex, HttpServletRequest request) {
-        log.error("Api Error - ", ex);
         return ResponseEntity
                 .status(ex.getStatus())
                 .contentType(MediaType.APPLICATION_JSON)
@@ -65,7 +59,6 @@ public class ApiExceptionHandler {
     public ResponseEntity<ErrorMessage> methodArgumentNotValidException(MethodArgumentNotValidException ex,
                                                                         HttpServletRequest request,
                                                                         BindingResult result) {
-        log.error("Api Error - ", ex);
         return ResponseEntity
                 .status(HttpStatus.UNPROCESSABLE_ENTITY)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -74,10 +67,17 @@ public class ApiExceptionHandler {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorMessage> handleDataIntegrityViolation(DataIntegrityViolationException ex, HttpServletRequest request) {
-        log.error("Api Error - ", ex);
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(new ErrorMessage(request, HttpStatus.BAD_REQUEST, "Invalid data provided"));
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ErrorMessage> handleHttpRequestMethodNotSupported(HttpRequestMethodNotSupportedException ex, HttpServletRequest request) {
+        return ResponseEntity
+                .status(HttpStatus.METHOD_NOT_ALLOWED)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new ErrorMessage(request, HttpStatus.METHOD_NOT_ALLOWED, "Método HTTP não suportado"));
     }
 }

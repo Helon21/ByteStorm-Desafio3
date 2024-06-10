@@ -9,11 +9,13 @@ import com.bytestorm.ms_propostas.exception.VotoJaExisteException;
 import com.bytestorm.ms_propostas.repository.VotoRepository;
 import com.bytestorm.ms_propostas.web.dto.VotoCriarDto;
 import com.bytestorm.ms_propostas.web.dto.mapper.VotoMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
+@Slf4j
 @Service
 public class VotoService {
 
@@ -39,6 +41,7 @@ public class VotoService {
 
         validarSeVotoJaExiste(voto.getId());
 
+        log.info("Funcionario com id {} votou {} na proposta de id {}", dto.getFuncionarioId(), dto.getStatus(), idProposta);
         return votoRepository.save(voto);
     }
 
@@ -58,6 +61,7 @@ public class VotoService {
     private void validarSeVotoJaExiste(VotoId id) {
         Optional<Voto> voto = votoRepository.findById(id);
         if (voto.isPresent()) {
+            log.warn("Voto já existe para o funcionário com id {} na proposta com id {}", id.getFuncionarioId(), id.getPropostaId());
             throw new VotoJaExisteException("Voto já existe para o funcionário com id '" + id.getFuncionarioId() + "' na proposta com id '" + id.getPropostaId() + "'.");
         }
     }

@@ -13,12 +13,14 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @Tag(name = "Propostas", description = "Contém todas as operações relativas a entidade proposta")
 @RestController
 @RequestMapping("/api/v1/propostas")
@@ -58,6 +60,7 @@ public class PropostaController {
     @PostMapping
     public ResponseEntity<PropostaRespostaDTO> criarProposta(@RequestBody @Valid PropostaCriarDTO dto) {
         Proposta proposta = propostaService.criarProposta(dto);
+        log.info("Proposta com id {} criada com sucesso.", proposta.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(PropostaMapper.propostaParaDTO(proposta));
     }
 
@@ -73,6 +76,7 @@ public class PropostaController {
     @PatchMapping("inabilitar-proposta/{id}")
     public ResponseEntity<PropostaRespostaDTO> inativarProposta(@PathVariable Long id) {
         Proposta proposta = propostaService.inativarProposta(id);
+        log.info("Proposta com id {} inativada com sucesso.", id);
         return ResponseEntity.ok(PropostaMapper.propostaParaDTO(proposta));
     }
 

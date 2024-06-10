@@ -20,12 +20,14 @@ public class Resultado {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(name = "proposta_id", nullable = false)
+    private Long propostaId;
+    @Column(name = "funcionario_id", nullable = false)
+    private Long funcionarioId;
     @Column(name = "titulo", nullable = false, length = 100)
     private String titulo;
     @Column(name = "descricao", nullable = false, length = 500)
     private String descricao;
-    @Column(name = "id_funcionario", nullable = false)
-    private Long idFuncionario;
     @Column(name = "data_votacao", nullable = false)
     private LocalDateTime dataVotacao;
     @Column(name = "qtd_aprovado", nullable = false)

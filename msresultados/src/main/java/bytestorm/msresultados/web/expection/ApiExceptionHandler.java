@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -23,7 +24,6 @@ public class ApiExceptionHandler {
     @ExceptionHandler(ResultadoNaoEncontradoException.class)
     public ResponseEntity<MensagemErro> entityNotFoundException(RuntimeException ex,
                                                                 HttpServletRequest request) {
-        log.error("Api Error - ", ex);
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -32,7 +32,6 @@ public class ApiExceptionHandler {
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<MensagemErro> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex, HttpServletRequest request) {
-        log.error("Api Error - ", ex);
         String error = String.format("O parâmetro '%s' do valor '%s' não pôde ser convertido para o tipo '%s'", ex.getName(), ex.getValue(), ex.getRequiredType().getSimpleName());
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
@@ -44,7 +43,6 @@ public class ApiExceptionHandler {
     public ResponseEntity<MensagemErro> methodArgumentNotValidException(MethodArgumentNotValidException ex,
                                                                         HttpServletRequest request,
                                                                         BindingResult result) {
-        log.error("Api Error - ", ex);
         return ResponseEntity
                 .status(HttpStatus.UNPROCESSABLE_ENTITY)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -53,7 +51,6 @@ public class ApiExceptionHandler {
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<MensagemErro> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex, HttpServletRequest request) {
-        log.error("Api Error - ", ex);
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -62,7 +59,6 @@ public class ApiExceptionHandler {
 
     @ExceptionHandler({NoResourceFoundException.class, ChangeSetPersister.NotFoundException.class})
     public ResponseEntity<MensagemErro> handleHttpMessageNotReadableException(Exception ex, HttpServletRequest request) {
-        log.error("Api Error - ", ex);
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -76,5 +72,13 @@ public class ApiExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(new MensagemErro(request, HttpStatus.BAD_REQUEST, errorMessage));
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<MensagemErro> handleHttpRequestMethodNotSupported(HttpRequestMethodNotSupportedException ex, HttpServletRequest request) {
+        return ResponseEntity
+                .status(HttpStatus.METHOD_NOT_ALLOWED)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new MensagemErro(request, HttpStatus.METHOD_NOT_ALLOWED, "Método HTTP não suportado"));
     }
 }

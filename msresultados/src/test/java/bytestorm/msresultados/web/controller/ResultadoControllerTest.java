@@ -1,6 +1,6 @@
 package bytestorm.msresultados.web.controller;
 
-import bytestorm.msresultados.entity.Resultado;
+import bytestorm.msresultados.web.dto.ResultadoRespostaDto;
 import bytestorm.msresultados.web.expection.MensagemErro;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +20,12 @@ public class ResultadoControllerTest {
 
     @Test
     public void buscarFuncionario_ComIdExistente_RetornarFuncionarioComStatus200() {
-        Resultado responseBody = testClient
+        ResultadoRespostaDto responseBody = testClient
                 .get()
                 .uri("/api/v1/resultados/id/1")
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(Resultado.class)
+                .expectBody(ResultadoRespostaDto.class)
                 .returnResult().getResponseBody();
 
         assertThat(responseBody).isNotNull();

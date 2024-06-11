@@ -20,6 +20,14 @@ spring:
     locale-resolver: fixed
     locale: pt_BR
 
+logging:
+  level:
+    org:
+      apache:
+        kafka: ERROR
+    springframework:
+      kafka: ERROR
+
 springdoc:
   swagger-ui:
     path: /docs-resultados.html

@@ -7,12 +7,12 @@
 	},
 	"item": [
 		{
-			"name": "GetById",
+			"name": "GetByFuncionarioId",
 			"request": {
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/api/v1/resultados/id/10",
+					"raw": "http://localhost:8082/api/v1/resultados/funcionariosId/14",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -22,8 +22,8 @@
 						"api",
 						"v1",
 						"resultados",
-						"id",
-						"10"
+						"funcionariosId",
+						"14"
 					]
 				}
 			},
@@ -54,8 +54,8 @@
 							"disabled": true
 						},
 						{
-							"key": "idFuncionario",
-							"value": "102",
+							"key": "funcionarioId",
+							"value": "37",
 							"disabled": true
 						},
 						{
@@ -75,12 +75,12 @@
 						},
 						{
 							"key": "dataVotacao",
-							"value": "2024-06-01T10:00:00",
+							"value": "2024-06-10T15:32:00",
 							"disabled": true
 						},
 						{
 							"key": "status",
-							"value": "rejeitado",
+							"value": "aprovado",
 							"disabled": true
 						}
 					]

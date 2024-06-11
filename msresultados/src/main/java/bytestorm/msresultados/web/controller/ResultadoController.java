@@ -42,7 +42,7 @@ public class ResultadoController {
                     @ApiResponse(responseCode = "404", description = "resultado não encontrado.",
                             content = @Content(mediaType = " application/json;charset=UTF-8", schema = @Schema(implementation = MensagemErro.class))),
             })
-    @GetMapping("/funcionarioId/{id}")
+    @GetMapping("/propostaId/{id}")
     public ResponseEntity<ResultadoRespostaDto> buscarPorPropostaId(@PathVariable Long id) {
         Resultado resultado = resultadoService.buscarResultadoPorPropostaId(id);
         return ResponseEntity.ok(ResultadoMapper.toDto(resultado));

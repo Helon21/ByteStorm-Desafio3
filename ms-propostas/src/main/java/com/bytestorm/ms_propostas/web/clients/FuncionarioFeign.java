@@ -6,10 +6,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-@FeignClient(value = "msfuncionarios", path = "funcionarios")
+@FeignClient(name = "msfuncionarios", path = "/api/v1/funcionarios")
 public interface FuncionarioFeign {
 
-    @GetMapping(value = "id/{id}")
+    @GetMapping("/id/{id}")
     ResponseEntity<Funcionario> buscarFuncionarioPorId(@PathVariable("id") Long id);
 
 }

@@ -1,5 +1,6 @@
 package com.bytestorm.ms_propostas.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,7 +24,7 @@ public class Proposta implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name="funcionarioId", nullable = false)
+    @Column(name="funcionario_id", nullable = false)
     private Long funcionarioId;
 
     @Column(name="titulo", nullable = false, length = 100)
@@ -46,6 +47,7 @@ public class Proposta implements Serializable {
         ATIVO, INATIVO, EM_VOTACAO, VOTACAO_ENCERRADA
     }
 
+    @JsonIgnore
     @OneToMany(mappedBy = "id.propostaId")
     private List<Voto> voto = new ArrayList<>();
 

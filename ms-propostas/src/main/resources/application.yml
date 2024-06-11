@@ -33,3 +33,10 @@ springdoc:
   api-docs:
     path: /docs-propostas
   packages-to-scan: com.bytestorm.ms_propostas.web
+
+server:
+  port: 0
+eureka:
+  client:
+    service-url:
+      defaultZone: http://${EUREKA_SERVER}:8761/eureka

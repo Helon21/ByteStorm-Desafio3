@@ -3,13 +3,17 @@ package com.bytestorm.ms_propostas.service;
 import com.bytestorm.ms_propostas.entity.Proposta;
 import com.bytestorm.ms_propostas.exception.*;
 import com.bytestorm.ms_propostas.repository.PropostaRepository;
-import com.bytestorm.ms_propostas.repository.VotoRepository;
+import com.bytestorm.ms_propostas.specification.PropostaSpecification;
 import com.bytestorm.ms_propostas.web.dto.PropostaCriarDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 
 import static com.bytestorm.ms_propostas.common.PropostaConstantes.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -17,11 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.ScheduledExecutorService;
+import java.util.*;
 
 import static org.mockito.Mockito.*;
 
@@ -32,15 +32,6 @@ public class PropostaServiceTestes {
     private FuncionarioService funcionarioService;
     @Mock
     private PropostaRepository propostaRepository;
-    @Mock
-    private VotoRepository votoRepository;
-    @Mock
-    private KafkaTemplate<String, Serializable> kafkaTemplate;
-    @Mock
-    private ScheduledExecutorService scheduler;
-    @Captor
-    private ArgumentCaptor<Runnable> captor;
-
 
     @InjectMocks
     private PropostaService propostaService;
@@ -65,16 +56,16 @@ public class PropostaServiceTestes {
     }
 
     @Test
-    public void buscarTodasPropostas_DeveRetornarListaDePropostas() {
-        List<Proposta> propostasMock = new ArrayList<>();
-        propostasMock.add(new Proposta());
-        propostasMock.add(new Proposta());
-        when(propostaRepository.findAll()).thenReturn(propostasMock);
+    public void testBuscarPropostas() {
+        PropostaSpecification spec = mock(PropostaSpecification.class);
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Proposta> expectedPage = new PageImpl<>(Collections.emptyList());
+        when(propostaRepository.findAll(any(Specification.class), eq(pageable))).thenReturn(expectedPage);
 
-        List<Proposta> propostas = propostaService.buscarTodasPropostas();
+        Page<Proposta> resultPage = propostaService.buscarPropostas(spec, pageable);
 
-        assertEquals(propostasMock.size(), propostas.size());
-        verify(propostaRepository, times(1)).findAll();
+        assertEquals(expectedPage, resultPage);
+        verify(propostaRepository, times(1)).findAll(spec, pageable);
     }
 
     @Test

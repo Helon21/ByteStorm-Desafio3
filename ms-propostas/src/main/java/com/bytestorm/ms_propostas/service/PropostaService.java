@@ -4,18 +4,20 @@ import com.bytestorm.ms_propostas.entity.Proposta;
 import com.bytestorm.ms_propostas.exception.*;
 import com.bytestorm.ms_propostas.repository.PropostaRepository;
 import com.bytestorm.ms_propostas.repository.VotoRepository;
+import com.bytestorm.ms_propostas.specification.PropostaSpecification;
 import com.bytestorm.ms_propostas.web.dto.IniciarVotacaoDTO;
 import com.bytestorm.ms_propostas.web.dto.PropostaCriarDTO;
 import com.bytestorm.ms_propostas.web.dto.ResultadoDTO;
 import com.bytestorm.ms_propostas.web.dto.mapper.PropostaMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -38,8 +40,8 @@ public class PropostaService {
     }
 
     @Transactional(readOnly = true)
-    public List<Proposta> buscarTodasPropostas() {
-        return propostaRepository.findAll();
+    public Page<Proposta> buscarPropostas(PropostaSpecification spec, Pageable pageable) {
+        return propostaRepository.findAll(spec, pageable);
     }
 
     @Transactional(readOnly = true)

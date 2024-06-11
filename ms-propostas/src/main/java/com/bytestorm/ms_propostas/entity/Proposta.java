@@ -54,6 +54,7 @@ public class Proposta implements Serializable {
         this.funcionarioId = funcionarioId;
         this.titulo = titulo;
         this.descricao = descricao;
+        this.status = Status.ATIVO;
     }
 
     @Override

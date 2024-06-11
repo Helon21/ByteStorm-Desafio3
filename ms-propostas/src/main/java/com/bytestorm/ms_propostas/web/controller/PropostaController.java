@@ -42,6 +42,19 @@ public class PropostaController {
         this.propostaService = propostaService;
     }
 
+    @Operation(summary = "Localizar uma proposta por id", description = "Recurso para localizar uma proposta por id.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Recurso localizado com sucesso.",
+                            content = @Content(mediaType = " application/json;charset=UTF-8", schema = @Schema(implementation = PropostaRespostaDTO.class))),
+                    @ApiResponse(responseCode = "404", description = "resultado não encontrado.",
+                            content = @Content(mediaType = " application/json;charset=UTF-8", schema = @Schema(implementation = ErrorMessage.class))),
+            })
+    @GetMapping("/id/{id}")
+    public ResponseEntity<PropostaRespostaDTO> buscarPorId(@PathVariable Long id) {
+        Proposta proposta = propostaService.buscarPropostaPorId(id);
+        return ResponseEntity.ok(PropostaMapper.propostaParaDTO(proposta));
+    }
+
     @Operation(summary = "Recuperar lista de propostas",
             parameters = {
                     @Parameter(in = QUERY, name = "titulo", description = "Filtra os resultados com base no título fornecido.",
@@ -82,8 +95,9 @@ public class PropostaController {
         var pageable = PageRequest.of(page, size, Sort.by(sortDirection, "id"));
         var spec = new PropostaSpecification(titulo, funcionarioId, status);
 
-        Page<Proposta> resultado = propostaService.buscarPropostas(spec, pageable);
-        return ResponseEntity.ok(PageableMapper.toDto(resultado));
+        Page<Proposta> propostasPage = propostaService.buscarPropostas(spec, pageable);
+        Page<PropostaRespostaDTO> propostaRespostaDTOS = propostasPage.map(PropostaMapper::propostaParaDTO);
+        return ResponseEntity.ok(PageableMapper.toDto(propostaRespostaDTOS));
     }
 
     @Operation(summary = "Cadastro de proposta", description = "Recurso para cadastrar proposta",

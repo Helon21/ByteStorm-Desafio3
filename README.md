@@ -213,7 +213,7 @@ O Gateway é configurado para roteamento de todas as requisições, permitindo q
 #### Iniciar processo de votação de uma proposta
 
 ```http
-  PATCH api/v1/propostas/iniciar-votacao/15
+  PATCH api/v1/propostas/iniciar-votacao/{id}
 ```
 ```
 {
@@ -225,7 +225,7 @@ O Gateway é configurado para roteamento de todas as requisições, permitindo q
 #### Inabilitar Proposta
 
 ```http
-  PATCH api/v1/propostas/inabilitar-proposta/1
+  PATCH api/v1/propostas/inabilitar-proposta/{id}
 ```
 - Muda o status da proposta para "inativo", impedindo que se abra uma votação para a mesma.
 

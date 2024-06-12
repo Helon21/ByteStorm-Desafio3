@@ -85,6 +85,11 @@ Utilizamos o Eureka para o registro e descoberta de serviços, facilitando a com
 
 O Gateway é configurado para roteamento de todas as requisições, permitindo que todos os serviços sejam acessados através de uma única porta.
 
+### 6. **Docker**
+
+O docker foi adicionado e configurado para realizar o build automático do projeto, ele constroi uma imagem com o jar, e depois um conteiner, que é conectado através de uma network.
+Ele já é executado com o comando `docker build --tag nome do microservico .` e depois iniciar o conteiner com `docker run --name nome do microservico --network nome da network -d nome da imagem` caso seja o eureka ou o gateway, acrescentar -p com o numero da porta, no caso do eureka 8761:8761 e no gateway 8080:8080
+
 ## Resumo do Funcionamento do Sistema
 
 1. **Criação de Propostas**: Um funcionário ativo cria uma proposta através do msPropostas, que verifica o status do funcionário no msFuncionarios usando OpenFeign.

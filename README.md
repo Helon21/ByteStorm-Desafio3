@@ -157,20 +157,20 @@ O Gateway é configurado para roteamento de todas as requisições, permitindo q
 
 #### Buscar funcionário por id
 
-```
+```http
   GET api/v1/funcionarios/id/{id}
 ```
 
 #### Buscar funcionário por cpf
 
-```
+```http
   GET api/v1/funcionarios/cpf/{cpf}
 ```
 
 #### Buscar todos os funcionários
 
-```
-  GET api/v1/funcionarios/cpf/{cpf}
+```http
+  GET api/v1/funcionarios
 ```
 
 - atributos possíveis na query:
@@ -196,7 +196,7 @@ O Gateway é configurado para roteamento de todas as requisições, permitindo q
 
 #### Criar uma nova proposta
 
-```
+```http
   POST /api/v1/propostas
 ```
 ```
@@ -212,7 +212,7 @@ O Gateway é configurado para roteamento de todas as requisições, permitindo q
 
 #### Iniciar processo de votação de uma proposta
 
-```
+```http
   PATCH api/v1/propostas/iniciar-votacao/15
 ```
 ```
@@ -224,14 +224,14 @@ O Gateway é configurado para roteamento de todas as requisições, permitindo q
 
 #### Inabilitar Proposta
 
-```
+```http
   PATCH api/v1/propostas/inabilitar-proposta/1
 ```
 - Muda o status da proposta para "inativo", impedindo que se abra uma votação para a mesma.
 
 #### Buscar propostas com paginação e filtros
 
-```
+```http
   GET api/v1/propostas
 ```
 
@@ -256,14 +256,14 @@ O Gateway é configurado para roteamento de todas as requisições, permitindo q
 
 #### Buscar uma proposta por id
 
-```
+```http
   GET api/v1/propostas/id/{id}
 ```
 
 #### Votar em uma proposta
 
-```
-  POST /api/v1/votos/votar/{ìd}
+```http
+  POST api/v1/votos/votar/{ìd}
 ```
 ```
 {
@@ -286,14 +286,14 @@ O Gateway é configurado para roteamento de todas as requisições, permitindo q
 
 #### Buscar por o ID proposta
 
-```
-  GET http://localhost:8080/api/v1/resultados/propostaId/{id}
+```http
+  GET api/v1/resultados/propostaId/{id}
 ```
 
 #### Buscar todas as propostas com paginação e filtros
 
-```
-  GET http://localhost:8080/api/v1/resultados/propostaId/{id}
+```http
+  GET api/v1/resultados/buscarResultados
 ```
 
 - `titulo` (query): Filtra os resultados com base no título fornecido.

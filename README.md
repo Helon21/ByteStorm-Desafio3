@@ -50,6 +50,49 @@ cd ByteStorm-Desafio3
 http://localhost:{porta_do_serviço}/h2-console
 ```
 
+## Descrição do Projeto
+
+Este projeto é uma arquitetura de micro serviços composta por três serviços principais, além de utilizar o Eureka para o registro e descoberta de serviços, e um Gateway para roteamento. A seguir, uma descrição detalhada de cada serviço e seu papel no sistema:
+
+### 1. **msFuncionarios**
+
+Este serviço é responsável por gerenciar os funcionários da organização. Ele oferece funcionalidades completas de CRUD para os dados dos funcionários. Além disso, mantém informações sobre o status dos funcionários, que podem estar "ativos" ou "inativos". Apenas funcionários ativos têm permissão para criar e votar em propostas.
+
+### 2. **msPropostas**
+
+O msPropostas é encarregado do gerenciamento de propostas. Suas principais funcionalidades incluem:
+
+- **CRUD de Propostas**: Criação, leitura e inativação de propostas.
+- **Abertura de Propostas para Votação**: Permite que propostas sejam abertas para votação pelos funcionários. O endpoint de criação de propostas requer, além dos detalhes da proposta, o ID do funcionário que está criando-a. Utilizando o OpenFeign, o msPropostas consulta o msFuncionarios para verificar se o funcionário está ativo antes de permitir a criação da proposta.
+- **Votação**: Funciona de maneira semelhante à criação de propostas. O ID do funcionário é verificado no msFuncionarios para garantir que ele esteja ativo antes de permitir a votação.
+- **Produção de Mensagens Kafka**: Quando uma votação é concluída, o resultado é enviado para o Kafka, onde o msPropostas atua como um producer.
+
+### 3. **msResultados**
+
+O msResultados tem a responsabilidade de receber e gerenciar os resultados das votações. Suas funcionalidades incluem:
+
+- **Consumo de Mensagens Kafka**: Este serviço é um consumer do Kafka, recebendo os resultados das votações.
+- **Persistência dos Resultados**: Armazena os resultados das votações em um banco de dados.
+- **Exposição dos Resultados**: Oferece endpoints para a consulta dos resultados das votações.
+
+## Infraestrutura Adicional
+
+### 4. **Eureka**
+
+Utilizamos o Eureka para o registro e descoberta de serviços, facilitando a comunicação entre os micro serviços. Cada micro serviço se registra no Eureka Server, que mantém um catálogo atualizado de todos os serviços disponíveis no sistema.
+
+### 5. **Gateway**
+
+O Gateway é configurado para roteamento de todas as requisições, permitindo que todos os serviços sejam acessados através de uma única porta.
+
+## Resumo do Funcionamento do Sistema
+
+1. **Criação de Propostas**: Um funcionário ativo cria uma proposta através do msPropostas, que verifica o status do funcionário no msFuncionarios usando OpenFeign.
+2. **Abertura para Votação**: A proposta pode ser aberta para votação, com um tempo determinado para a duração da votação.
+3. **Votação**: Os funcionários ativos podem votar nas propostas. O msPropostas verifica novamente o status do funcionário no msFuncionarios antes de permitir a votação.
+4. **Envio dos Resultados**: Após o término da votação, o msPropostas envia os resultados para o Kafka.
+5. **Processamento dos Resultados**: O msResultados consome as mensagens do Kafka, persiste os dados no banco de dados e disponibiliza os resultados através de seus endpoints.
+
 ## Documentação dos Endpoints
 
 ## MS Funcionarios

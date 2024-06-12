@@ -1,7 +1,6 @@
 package bytestorm.msfuncionarios.web.controller;
 
 import bytestorm.msfuncionarios.entity.Funcionario;
-import bytestorm.msfuncionarios.repository.projection.FuncionarioProjection;
 import bytestorm.msfuncionarios.service.FuncionarioService;
 import bytestorm.msfuncionarios.web.dto.FuncionarioAlterarStatusDto;
 import bytestorm.msfuncionarios.web.dto.FuncionarioRespostaDto;
@@ -115,8 +114,9 @@ public class FuncionarioController {
             })
     @GetMapping
     public ResponseEntity<PageableDto> buscarTodos(@Parameter(hidden = true) @PageableDefault(size=5, sort={"nome"}, page=0) Pageable pageable) {
-        Page<FuncionarioProjection> clients = funcionarioService.getAll(pageable);
-        return ResponseEntity.ok(PageableMapper.toDto(clients));
+        Page<Funcionario> funcionarios = funcionarioService.getAll(pageable);
+        Page<FuncionarioRespostaDto> funcionariosDto = funcionarios.map(FuncionarioMapper::paraDto);
+        return ResponseEntity.ok(PageableMapper.toDto(funcionariosDto));
     }
 
     @Operation(summary = "Altera o status Funcionários",

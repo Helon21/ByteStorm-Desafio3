@@ -5,7 +5,6 @@ import bytestorm.msfuncionarios.exceptions.CpfRepetidoException;
 import bytestorm.msfuncionarios.exceptions.FuncionarioNaoEncontradoException;
 import bytestorm.msfuncionarios.repository.FuncionarioRepository;
 import bytestorm.msfuncionarios.web.dto.FuncionarioAlterarStatusDto;
-import bytestorm.msfuncionarios.repository.projection.FuncionarioProjection;
 import bytestorm.msfuncionarios.web.dto.FuncionarioCriarDto;
 import bytestorm.msfuncionarios.web.dto.mapper.FuncionarioMapper;
 import lombok.RequiredArgsConstructor;
@@ -64,7 +63,7 @@ public class FuncionarioService {
     }
 
     @Transactional(readOnly = true)
-    public Page<FuncionarioProjection> getAll(Pageable pageable) {
+    public Page<Funcionario> getAll(Pageable pageable) {
         return funcionarioRepository.findAllPageable(pageable);
     }
 

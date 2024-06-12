@@ -313,6 +313,29 @@
 								}
 							},
 							"response": []
+						},
+						{
+							"name": "Inabilitar Proposta",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/api/v1/propostas/inabilitar-proposta/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"v1",
+										"propostas",
+										"inabilitar-proposta",
+										"1"
+									]
+								}
+							},
+							"response": []
 						}
 					]
 				},

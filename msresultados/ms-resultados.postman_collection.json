@@ -1,0 +1,92 @@
+{
+	"info": {
+		"_postman_id": "3c0e4012-e35c-4bda-a38b-002978cfe93d",
+		"name": "ms-resultados",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "33534860"
+	},
+	"item": [
+		{
+			"name": "GetByFuncionarioId",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8082/api/v1/resultados/funcionariosId/14",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"api",
+						"v1",
+						"resultados",
+						"funcionariosId",
+						"14"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetAll - filter",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/v1/resultados/buscarResultados",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"api",
+						"v1",
+						"resultados",
+						"buscarResultados"
+					],
+					"query": [
+						{
+							"key": "titulo",
+							"value": "ção",
+							"disabled": true
+						},
+						{
+							"key": "funcionarioId",
+							"value": "37",
+							"disabled": true
+						},
+						{
+							"key": "size",
+							"value": "6",
+							"disabled": true
+						},
+						{
+							"key": "page",
+							"value": "0",
+							"disabled": true
+						},
+						{
+							"key": "direction",
+							"value": "desc",
+							"disabled": true
+						},
+						{
+							"key": "dataVotacao",
+							"value": "2024-06-10T15:32:00",
+							"disabled": true
+						},
+						{
+							"key": "status",
+							"value": "aprovado",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

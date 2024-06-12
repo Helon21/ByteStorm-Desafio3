@@ -85,6 +85,11 @@ Utilizamos o Eureka para o registro e descoberta de serviços, facilitando a com
 
 O Gateway é configurado para roteamento de todas as requisições, permitindo que todos os serviços sejam acessados através de uma única porta.
 
+### 6. **Docker**
+
+O docker foi adicionado e configurado para realizar o build automático do projeto, ele constroi uma imagem com o jar, e depois um conteiner, que é conectado através de uma network.
+Ele já é executado com o comando `docker build --tag nome do microservico .` e depois iniciar o conteiner com `docker run --name nome do microservico --network nome da network -d nome da imagem` caso seja o eureka ou o gateway, acrescentar -p com o numero da porta, no caso do eureka 8761:8761 e no gateway 8080:8080
+
 ## Resumo do Funcionamento do Sistema
 
 1. **Criação de Propostas**: Um funcionário ativo cria uma proposta através do msPropostas, que verifica o status do funcionário no msFuncionarios usando OpenFeign.
@@ -157,20 +162,20 @@ O Gateway é configurado para roteamento de todas as requisições, permitindo q
 
 #### Buscar funcionário por id
 
-```
+```http
   GET api/v1/funcionarios/id/{id}
 ```
 
 #### Buscar funcionário por cpf
 
-```
+```http
   GET api/v1/funcionarios/cpf/{cpf}
 ```
 
 #### Buscar todos os funcionários
 
-```
-  GET api/v1/funcionarios/cpf/{cpf}
+```http
+  GET api/v1/funcionarios
 ```
 
 - atributos possíveis na query:
@@ -196,7 +201,7 @@ O Gateway é configurado para roteamento de todas as requisições, permitindo q
 
 #### Criar uma nova proposta
 
-```
+```http
   POST /api/v1/propostas
 ```
 ```
@@ -212,8 +217,8 @@ O Gateway é configurado para roteamento de todas as requisições, permitindo q
 
 #### Iniciar processo de votação de uma proposta
 
-```
-  PATCH api/v1/propostas/iniciar-votacao/15
+```http
+  PATCH api/v1/propostas/iniciar-votacao/{id}
 ```
 ```
 {
@@ -224,14 +229,14 @@ O Gateway é configurado para roteamento de todas as requisições, permitindo q
 
 #### Inabilitar Proposta
 
-```
-  PATCH api/v1/propostas/inabilitar-proposta/1
+```http
+  PATCH api/v1/propostas/inabilitar-proposta/{id}
 ```
 - Muda o status da proposta para "inativo", impedindo que se abra uma votação para a mesma.
 
 #### Buscar propostas com paginação e filtros
 
-```
+```http
   GET api/v1/propostas
 ```
 
@@ -256,14 +261,14 @@ O Gateway é configurado para roteamento de todas as requisições, permitindo q
 
 #### Buscar uma proposta por id
 
-```
+```http
   GET api/v1/propostas/id/{id}
 ```
 
 #### Votar em uma proposta
 
-```
-  POST /api/v1/votos/votar/{ìd}
+```http
+  POST api/v1/votos/votar/{ìd}
 ```
 ```
 {
@@ -286,14 +291,14 @@ O Gateway é configurado para roteamento de todas as requisições, permitindo q
 
 #### Buscar por o ID proposta
 
-```
-  GET http://localhost:8080/api/v1/resultados/propostaId/{id}
+```http
+  GET api/v1/resultados/propostaId/{id}
 ```
 
 #### Buscar todas as propostas com paginação e filtros
 
-```
-  GET http://localhost:8080/api/v1/resultados/propostaId/{id}
+```http
+  GET api/v1/resultados/buscarResultados
 ```
 
 - `titulo` (query): Filtra os resultados com base no título fornecido.

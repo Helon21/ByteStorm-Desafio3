@@ -5,7 +5,6 @@ import bytestorm.msfuncionarios.exceptions.FuncionarioNaoEncontradoException;
 import bytestorm.msfuncionarios.repository.FuncionarioRepository;
 import bytestorm.msfuncionarios.web.dto.FuncionarioAlterarStatusDto;
 import bytestorm.msfuncionarios.exceptions.CpfRepetidoException;
-import bytestorm.msfuncionarios.repository.projection.FuncionarioProjection;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -152,16 +151,17 @@ public class FuncionarioServiceTest {
 
     @Test
     void testGetAll() {
-        Page<FuncionarioProjection> page = new PageImpl<>(Collections.singletonList(FUNCIONARIO_PROJECTION_PADRAO));
+        Page<Funcionario> page = new PageImpl<>(Collections.singletonList(JOAO));
         Pageable pageable = PageRequest.of(0, 10);
 
         when(funcionarioRepository.findAllPageable(any(Pageable.class))).thenReturn(page);
 
-        Page<FuncionarioProjection> result = funcionarioService.getAll(pageable);
+        Page<Funcionario> result = funcionarioService.getAll(pageable);
 
-        assertEquals(FUNCIONARIO_PROJECTION_PADRAO.getId(), result.getTotalElements());
-        assertEquals(FUNCIONARIO_PROJECTION_PADRAO.getNome(), result.getContent().get(0).getNome());
-        assertEquals(FUNCIONARIO_PROJECTION_PADRAO.getCpf(), result.getContent().get(0).getCpf());
+        assertEquals(result.getTotalElements(), 1);
+        assertEquals(JOAO.getId(), result.getContent().get(0).getId());
+        assertEquals(JOAO.getNome(), result.getContent().get(0).getNome());
+        assertEquals(JOAO.getCpf(), result.getContent().get(0).getCpf());
 
     }
 

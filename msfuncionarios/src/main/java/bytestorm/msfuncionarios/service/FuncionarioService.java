@@ -8,6 +8,7 @@ import bytestorm.msfuncionarios.web.dto.FuncionarioAlterarStatusDto;
 import bytestorm.msfuncionarios.web.dto.FuncionarioCriarDto;
 import bytestorm.msfuncionarios.web.dto.mapper.FuncionarioMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class FuncionarioService {
@@ -28,6 +30,7 @@ public class FuncionarioService {
 
         Optional<Funcionario> funcionarioRepetido = funcionarioRepository.findByCpf(funcionario.getCpf());
         if (funcionarioRepetido.isPresent()) {
+            log.warn("Cpf {} já cadastrado no BD!", funcionario.getCpf());
             throw new CpfRepetidoException("Funcionario com cpf " + funcionario.getCpf() + " já cadastrado");
         }
 

@@ -18,6 +18,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 
 import static io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY;
 
+@Slf4j
 @Tag(name = "Funcionarios", description = "Contém todas as operações relativas a entidade funcionário")
 @RequiredArgsConstructor
 @RestController
@@ -47,6 +49,7 @@ public class FuncionarioController {
     @PostMapping
     public ResponseEntity<FuncionarioRespostaDto> criar(@RequestBody @Valid FuncionarioCriarDto FuncionarioCriardto) {
         Funcionario funcionario = funcionarioService.salvar(FuncionarioCriardto);
+        log.info("Funcionario com id {} cadastrado no BD!", funcionario.getId());
         return ResponseEntity.status(201).body(FuncionarioMapper.paraDto(funcionario));
     }
 
@@ -63,6 +66,7 @@ public class FuncionarioController {
     @PutMapping("/{id}")
     public ResponseEntity<FuncionarioRespostaDto> alterar(@PathVariable Long id, @RequestBody @Valid FuncionarioCriarDto FuncionarioCriardto) {
         Funcionario funcionario = funcionarioService.alterar(id, FuncionarioCriardto);
+        log.info("Funcionario com id {} alterado no BD!", funcionario.getId());
         return ResponseEntity.ok().body(FuncionarioMapper.paraDto(funcionario));
     }
 
@@ -132,6 +136,7 @@ public class FuncionarioController {
     @PatchMapping("/{id}")
     public ResponseEntity<FuncionarioRespostaDto> alterarStatus(@PathVariable Long id, @RequestBody @Valid FuncionarioAlterarStatusDto statusDto) {
         Funcionario funcionario = funcionarioService.alterarStatus(id, statusDto);
+        log.info("Funcionario com id {} teve seu status alterado!", funcionario.getId());
         return ResponseEntity.ok().body(FuncionarioMapper.paraDto(funcionario));
     }
 

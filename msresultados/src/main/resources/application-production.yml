@@ -1,0 +1,55 @@
+spring:
+  application:
+    name: msresultados
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: false
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.H2Dialect
+  datasource:
+    url: jdbc:h2:file:./resultados-db;DB_CLOSE_ON_EXIT=FALSE;AUTO_RECONNECT=TRUE
+    driverClassName: org.h2.Driver
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  web:
+    locale-resolver: fixed
+    locale: pt_BR
+
+logging:
+  level:
+    org:
+      apache:
+        kafka: ERROR
+    springframework:
+      kafka: ERROR
+
+springdoc:
+  swagger-ui:
+    path: /docs-resultados.html
+  api-docs:
+    path: /docs-resultados
+  packagesToScan: bytestorm.msresultados.web.controller
+
+server:
+  port: 0
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://cursoms-eureka-user:ecok-usr-eeuramssur@${EUREKA_SERVER}:8761/eureka
+  instance:
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: "always"
